@@ -1,7 +1,5 @@
 #!/usr/bin/ruby
 
-puts DATA
-
 entries = DATA.read.split("\n").map(&:to_i)
 
 pp entries.combination(2).find { |x| x.sum == 2020 }.reduce(&:*)
