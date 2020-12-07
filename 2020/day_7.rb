@@ -22,21 +22,21 @@ $bags = TSort.tsort(
 )
 
 def part1
-  h = { 'shiny gold' => true }
+  h = {}
 
   $bags.each do |b|
-    h[b] ||= $rules[b].any? { |_, a| h[a] }
+    h[b] ||= $rules[b].any? { |_, a| h[a] || a == 'shiny gold' }
   end
 
-  h.count { |_, v| v } - 1
+  h.count { |_, v| v }
 end
 
 def part2
   h = {}
   $bags.each do |b|
-    h[b] = 1 + $rules[b].sum { |c, a| h.fetch(a) * c.to_i }
+    h[b] = $rules[b].sum { |c, a| h.fetch(a).succ * c.to_i }
   end
-  h['shiny gold'] - 1
+  h['shiny gold']
 end
 
 pp part1
