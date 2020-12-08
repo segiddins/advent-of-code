@@ -1,4 +1,5 @@
 require 'set'
+require 'tsort'
 
 Point = Struct.new(:x, :y) do
     def +(other)
