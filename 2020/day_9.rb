@@ -7,18 +7,18 @@ $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 $n = 25
 $input_lines = $input.split("\n").map(&:to_i)
 
-
 def part1
   n = $n
   $input_lines.count.-(n).times do |b|
     a = $input_lines[b, n]
     s = $input_lines[b + n]
     next if a.combination(2).any? do |c|
-        c.sum == s
+      c.sum == s
     end
+
     return s
   end
-  abort "none found"
+  abort 'none found'
 end
 
 def part2
@@ -27,15 +27,15 @@ def part2
   loop do
     j = 1
     loop do
-        sub = $input_lines[i, j]
-        # pp sub
-        break if sub.count != j
-        return sub.minmax.sum if sub.sum == s
-        j += 1
+      sub = $input_lines[i, j]
+      break if sub.count != j
+      return sub.minmax.sum if sub.sum == s
+
+      j += 1
     end
     i += 1
   end
-  abort "not"
+  abort 'not'
 end
 
 pp part1
