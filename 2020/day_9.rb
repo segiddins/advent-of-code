@@ -29,7 +29,10 @@ def part2
     loop do
       sub = $input_lines[i, j]
       break if sub.count != j
-      return sub.minmax.sum if sub.sum == s
+
+      ss = sub.sum
+      break if ss > s
+      return sub.minmax.sum if ss == s
 
       j += 1
     end
