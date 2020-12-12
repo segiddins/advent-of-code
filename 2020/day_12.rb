@@ -21,9 +21,9 @@ def part1
     when 'W'
       pos -= c
     when 'L'
-      dir *= (Math::E + 0i)**(1i * c * Math::PI / 180.0)
+      dir *= Math::E.to_c**(1i * c * Math::PI / 180.0)
     when 'R'
-      dir *= (Math::E + 0i)**(-1i * c * Math::PI / 180.0)
+      dir *= Math::E.to_c**(-1i * c * Math::PI / 180.0)
     when 'F'
       pos += dir * c
     end
@@ -47,9 +47,9 @@ def part2
     when 'W'
       waypos -= c
     when 'L'
-      waypos = pos + (waypos - pos) * (Math::E + 0i)**(1i * c * Math::PI / 180.0)
+      waypos = pos + (waypos - pos) * Math::E.to_c**(1i * c * Math::PI / 180.0)
     when 'R'
-      waypos = pos + (waypos - pos) * (Math::E + 0i)**(-1i * c * Math::PI / 180.0)
+      waypos = pos + (waypos - pos) * Math::E.to_c**(-1i * c * Math::PI / 180.0)
     when 'F'
       w = waypos - pos
       pos += (waypos - pos) * c
