@@ -16,9 +16,9 @@ end
 
 def mod_inverse(b, mod)
   if b.gcd(mod) != 1
-    raise "Inverse does not exist"
+    raise 'Inverse does not exist'
   else
-    (b ** ( mod - 2)) % mod
+    (b**(mod - 2)) % mod
   end
 end
 
@@ -30,7 +30,11 @@ end
 
 def part2
   chr_o = -1
-  eqn = $buses.each_with_index.map { |b, i| next if b.zero?; [b, ('a'.ord + (chr_o += 1)).chr, -i] }.compact
+  eqn = $buses.each_with_index.map do |b, i|
+    next if b.zero?
+
+    [b, ('a'.ord + (chr_o += 1)).chr, -i]
+  end.compact
 
   f, *rest = eqn
   coeff = rest.map do |rhs|
