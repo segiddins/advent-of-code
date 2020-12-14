@@ -6,11 +6,11 @@ $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 # $input = DATA.read
 $input_lines = $input.split("\n")
 
-
 def mask(m, n)
-  n = n.to_s(2).rjust(36, ?0)
+  n = n.to_s(2).rjust(36, '0')
   m.chars.each_with_index do |c, i|
-    next if c == ?X
+    next if c == 'X'
+
     n[i] = c
   end
   n.to_i(2)
@@ -22,25 +22,32 @@ def part1
   $input_lines.each do |l|
     case l
     when /mask = (.+)/
-      mask = $1
+      mask = Regexp.last_match(1)
     when /mem\[(\d+)\] = (\d+)/
-      mem[$1.to_i] = mask(mask, $2.to_i)
+      mem[Regexp.last_match(1).to_i] = mask(mask, Regexp.last_match(2).to_i)
     end
   end
   mem.each_value.sum
 end
 
 def mask2(m, n)
-  n = n.to_s(2).rjust(36, ?0)
+  n = n.to_s(2).rjust(36, '0')
   fl = []
   m.chars.each_with_index do |c, i|
-    next if c == ?0
-    fl << i if c == ?X
+    next if c == '0'
+
+    fl << i if c == 'X'
     n[i] = c
   end
   0.upto(fl.size).flat_map do |c|
-    fl.combination(c).
-      map { |i| a = n.dup; i.each { |d| a[d] = '1' }; (fl - i).each { |d| a[d] = '0' }; a }.map { |g| g.to_i(2)}
+    fl.combination(c)
+      .map do |i|
+        a = n.dup
+        i.each { |d| a[d] = '1' }
+        (fl - i).each { |d| a[d] = '0' }
+        a
+      end
+      .map { |g| g.to_i(2) }
   end.sort
 end
 
@@ -50,10 +57,10 @@ def part2
   $input_lines.each do |l|
     case l
     when /mask = (.+)/
-      mask = $1
+      mask = Regexp.last_match(1)
     when /mem\[(\d+)\] = (\d+)/
-      mask2(mask, $1.to_i).each do |addr|
-        mem[addr] = $2.to_i
+      mask2(mask, Regexp.last_match(1).to_i).each do |addr|
+        mem[addr] = Regexp.last_match(2).to_i
       end
     end
   end
