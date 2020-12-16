@@ -6,7 +6,11 @@ $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 # $input = DATA.read
 rules, mine, nearby = $input.split("\n\n")
 
-$rules = rules.split("\n").map { |r| k, v = r.split(': '); [k, v.split(' or ').map { |l| Range.new(*l.split('-').map(&:to_i)) }] }.to_h
+$rules = rules.split("\n").map do |r|
+  k, v = r.split(': ')
+  [k,
+   v.split(' or ').map { |l| Range.new(*l.split('-').map(&:to_i)) }]
+end.to_h
 $mine = mine.split("\n")[1].yield_self { |l| l.split(',').map(&:to_i) }
 $nearby = nearby.split("\n")[1..-1].map { |l| l.split(',').map(&:to_i) }
 
@@ -19,7 +23,7 @@ def part1
         0
       else
         f
-end
+      end
     end
   end
 end
@@ -45,6 +49,7 @@ def part2
 
   loop do
     multi = valid.select { |v| v.size > 1 }
+
     if valid.flat_map { |v| next unless v.size == 1; multi.map { |m| next if m.size == 1; m.delete(v.keys.first) } }.compact.empty?
 
       break
