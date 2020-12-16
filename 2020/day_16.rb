@@ -51,8 +51,6 @@ def part2
     end
   end
 
-  pp valid
-
   valid.each_with_index.reduce(1) do |acc, (h, i)|
     k = h.keys[0]
     next acc unless k.start_with?('departure')
