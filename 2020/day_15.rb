@@ -12,8 +12,9 @@ def nth(nth)
   turn = $input_lines.size
   last_spoken = $input_lines.last
   loop do
-    next_spoken = if spoken.fetch(last_spoken, turn) < turn
-                    turn - spoken[last_spoken]
+    last_seen = spoken[last_spoken]
+    next_spoken = if last_seen && last_seen < turn
+                    turn - last_seen
                   else
                     0
                   end
