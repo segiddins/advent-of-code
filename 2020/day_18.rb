@@ -8,17 +8,10 @@ $input_lines = $input.split("\n")
 
 def ev(s)
   if s.include?('(')
-    ev s.gsub(/\(([^\(]+?)\)/) { |m| ev m[1..-2] }
+    ev s.gsub(/\(([^\(]+?)\)/) { |_m| ev Regexp.last_match(1) }
   else
-    stack = s.split(' ')
-    stack.reduce do |acc, elem|
-      case acc
-      when Proc
-        acc[elem.to_i]
-      else
-        ->(e) { acc.to_i.send(elem, e.to_i) }
-      end
-    end
+    (s = s.sub(/\d+ [+*] \d+/) { |m| eval(m) }) until s =~ /^\d+$/
+    s.to_i
   end
 end
 
@@ -28,19 +21,12 @@ end
 
 def ev2(s)
   if s.include?('(')
-    ev2 s.gsub(/\(([^\(]+?)\)/) { |m| ev2 m[1..-2] }
+    ev2 s.gsub(/\(([^\(]+?)\)/) { |_m| ev2 Regexp.last_match(1) }
   else
     (s = s.sub(/\d+ \+ \d+/) { |m| eval(m) }) while s.include?('+')
+    (s = s.sub(/\d+ \* \d+/) { |m| eval(m) }) while s.include?('*')
 
-    stack = s.split(' ')
-    stack.reduce do |acc, elem|
-      case acc
-      when Proc
-        acc[elem.to_i]
-      else
-        ->(e) { acc.to_i.send(elem, e.to_i) }
-      end
-    end.to_i
+    s.to_i
   end
 end
 
