@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require_relative '../aoc'
 
@@ -6,72 +7,77 @@ $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 # $input = DATA.read
 $input_lines = $input.split("\n")
 
-FourDPoint = Struct.new(:x, :y, :z, :w)
-
-$map = Hash.new('.').tap do |map|
+$map = {}.tap do |map|
   $input_lines.each_with_index do |row, r|
     row.chars.each_with_index do |a, c|
-      map[FourDPoint.new(r, c, 0, 0)] = a
+      next unless a == '#'
+
+      map[[r, c]] = true
     end
   end
 end.freeze
 
-def run(abs_dw:)
-  map = $map
-  1.upto(6) do |_iter|
-    nm = map.dup
+NEIGHBORS = Hash.new do |h, ndim|
+  h[ndim] = 1.upto((3**ndim).pred).map do |idx|
+    s = idx.to_s(3)
+    Array.new(ndim) { |i| case s[-i - 1] when '1' then 1 when '2' then -1 else 0 end }.freeze
+  end.freeze
+end
 
-    min_x, max_x = map.each_key.map(&:x).minmax
-    min_y, max_y = map.each_key.map(&:y).minmax
-    min_z, max_z = map.each_key.map(&:z).minmax
-    min_w, max_w = map.each_key.map(&:w).minmax
+def each_around(pt, size)
+  return enum_for(__method__, pt, size) unless block_given?
 
-    min_x.pred.upto(max_x.succ) do |x|
-      min_y.pred.upto(max_y.succ) do |y|
-        min_z.pred.upto(max_z.succ) do |z|
-          min_w.pred.upto(max_w.succ) do |w|
-            an = 0
+  NEIGHBORS[size].each do |n|
+    yield Array.new(size) { |i| pt[i] + n[i] }
+  end
+end
 
-            -1.upto(1) do |dx|
-              -1.upto(1) do |dy|
-                -1.upto(1) do |dz|
-                  (-abs_dw).upto(abs_dw) do |dw|
-                    next if dx.zero? && dy.zero? && dz.zero? && dw.zero?
+def mirrored(pt)
+  Array.new(pt.size) { |i| i < 2 ? pt[i] : pt[i].abs }
+end
 
-                    an += 1 if map[FourDPoint.new(x + dx, y + dy, z + dz, w + dw)] == '#'
-                  end
-                end
-              end
-            end
+def run(ndim:)
+  map = $map.transform_keys { |k| k + [0] * (ndim - k.length) }
 
-            coord = FourDPoint.new(x, y, z, w)
+  6.times do
+    nm = Hash.new { |h, k| h.fetch(mirrored(k), false) }
 
-            if map[coord] == '#'
-              nm[coord] = '.' unless (an == 2) || (an == 3)
-            else
-              nm[coord] = '#' if an == 3
-            end
-          end
-        end
+    neighbors = Hash.new { |h, k| h[k] = Set.new }
+    map.each_key do |pt|
+      each_around(pt, ndim) do |n|
+        nb = neighbors[n]
+        nb << pt if nb.size <= 3
       end
+    end
+    neighbors.each do |pt, n|
+      next if pt[2..-1].any? { |d| d < -3 }
+
+      n = n.size
+      nm[pt] = true if n == 3 || (n == 2 && map[pt])
     end
 
     map = nm
   end
 
-  map.count { |_, v| v == '#' }
+  map.each_key.reject { |pt| pt != mirrored(pt) }.sum { |pt| 2**pt[2..-1].count(&:nonzero?) }
 end
 
 def part1
-  run(abs_dw: 0)
+  run(ndim: 3)
 end
 
 def part2
-  run(abs_dw: 1)
+  run(ndim: 4)
 end
 
 pp part1
 pp part2
+# pp run(ndim: 5)
+# pp run(ndim: 6)
+# pp run(ndim: 7)
+# pp run(ndim: 8)
+# pp run(ndim: 9)
+# pp run(ndim: 10)
 
 __END__
 .#.
