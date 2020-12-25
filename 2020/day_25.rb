@@ -6,22 +6,20 @@ require 'openssl'
 $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 # $input = DATA.read
 $k1, $k2 = $input.split("\n").map(&:to_i)
-$mod = 20_201_227.to_bn
-
-def t(ls, sn)
-  sn.to_bn.mod_exp(ls, $mod).to_i
-end
+$mod = 20_201_227
 
 def part1
   k1 = nil
   k2 = nil
+  v = 1
   1.upto(50_000_000) do |ls|
-    v = t(ls, 7)
+    v *= 7
+    v %= $mod
     k1 = ls if v == $k1
     k2 = ls if v == $k2
     break if k1 || k2
   end
-  k1 ? t(k1, $k2) : t(k2, $k1)
+  k1 ? $k2.to_bn.mod_exp(k1, $mod).to_i : $k1.to_bn.mod_exp(k2, $mod).to_i
 end
 
 def part2; end
