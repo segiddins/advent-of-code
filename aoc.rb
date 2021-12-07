@@ -44,3 +44,15 @@ Point = Struct.new(:x, :y) do
     end
   end
 end
+
+class Array
+  def median
+      mid = length / 2
+      sorted = sort
+      length.odd? ? sorted[mid] : (sorted[mid] + sorted[mid - 1]) / 2
+  end
+
+  def mean
+    sum / count
+  end
+end

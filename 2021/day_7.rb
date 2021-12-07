@@ -3,25 +3,21 @@
 require_relative '../aoc'
 
 $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
-# $input = DATA.read
+$input = DATA.read
 $lines = $input.split("\n")
 
 def part1
   crabs = $lines.first.split(?,).map(&:to_i)
-  min,max = crabs.minmax
-  pos = (min..max).min_by { |pos| crabs.sum { |c| (c-pos).abs } }
+  pos = crabs.median
   crabs.sum { |c| (c-pos).abs }
 end
 
 def part2
-
-  cost = ->(c, pos) { (c-pos).abs * (c-pos).abs.succ / 2 }
-  crabs = $lines.first.split(?,).map(&:to_i)
-  min,max = crabs.minmax
-  pos = (min..max).min_by { |pos| crabs.sum { |c| cost[c, pos] } }
-  crabs.sum { |c| cost[c, pos] }
+  cost = ->(c, pos) { (c-pos).abs * (c-pos).abs.+(1) / 2 }
+  crabs = $lines.first.split(?,).map(&:to_i).sort
+  pos = crabs.map(&:to_f).mean
+  [crabs.sum { |c| cost[c, pos.floor] }, crabs.sum { |c| cost[c, pos.ceil] }].min
 end
-
 
 pp part1
 pp part2
