@@ -28,10 +28,35 @@ Point = Struct.new(:x, :y) do
     self.class.new(x + dx)
   end
 
+  def <=>(other)
+    [x, y] <=> [other.x, other.y]
+  end
+
+  def to_s
+    "(#{x}, #{y})"
+  end
+
   def neighbors(distance, min_x: nil, min_y: nil, max_x: nil, max_y: nil)
     [-1, 0, 1].flat_map do |dx|
       [-1, 0, 1].map do |dy|
         next if dx.zero? && dy.zero?
+
+        x_ = x + dx * distance
+        y_ = y + dy * distance
+
+        next if (min_x && x_ < min_x) || (max_x && x_ > max_x)
+        next if (min_y && y_ < min_y) || (max_y && y_ > max_y)
+
+        self.class.new(x_, y_)
+      end.compact
+    end
+  end
+
+  def non_diag_neighbors(distance, min_x: nil, min_y: nil, max_x: nil, max_y: nil)
+    [-1, 0, 1].flat_map do |dx|
+      [-1, 0, 1].map do |dy|
+        next if dx.zero? && dy.zero?
+        next if dx.nonzero? && dy.nonzero?
 
         x_ = x + dx * distance
         y_ = y + dy * distance
@@ -54,5 +79,10 @@ class Array
 
   def mean
     sum / count
+  end
+
+  def only
+    raise "#{self}.length != 1" unless length == 1
+    first
   end
 end
