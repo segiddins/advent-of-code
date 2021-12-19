@@ -9,7 +9,7 @@ $lines = $input.split("\n")
 
 class PriorityQueue
   def initialize
-    @h = Hash.new {|h,k| h[k] = [] }
+    @h = Hash.new { |h, k| h[k] = [] }
   end
   def <<(e, p)
     @h[p] << e
@@ -20,16 +20,29 @@ class PriorityQueue
     a.pop.tap { @h.delete(min_p) if a.empty? }
   end
 end
-def distance(grid, start, goal, came_from = { start => nil }, cost_so_far = { start => 0 })
-  to_visit = PriorityQueue.new.tap {|q| q.<<(start, 0) }
+def distance(
+  grid,
+  start,
+  goal,
+  came_from = { start => nil },
+  cost_so_far = { start => 0 }
+)
+  to_visit = PriorityQueue.new.tap { |q| q.<<(start, 0) }
 
   max_x = grid.each_key.map(&:x).max
   max_y = grid.each_key.map(&:y).max
 
   while current = to_visit.pop
     break if current == goal
-    
-    adj = current.non_diag_neighbors(1, min_x: 0, min_y: 0, max_x: max_x, max_y: max_y)
+
+    adj =
+      current.non_diag_neighbors(
+        1,
+        min_x: 0,
+        min_y: 0,
+        max_x: max_x,
+        max_y: max_y
+      )
 
     adj.each do |n|
       cost = cost_so_far[current] + grid[n]
@@ -53,44 +66,51 @@ def distance(grid, start, goal, came_from = { start => nil }, cost_so_far = { st
 end
 
 def part1
-  grid = $lines.each_with_index.flat_map do |l, y|
-    l.chars.each_with_index.map do |i, x|
-      [Point.new(x, y), i.to_i]
-    end
-  end.to_h
+  grid =
+    $lines
+      .each_with_index
+      .flat_map do |l, y|
+        l.chars.each_with_index.map { |i, x| [Point.new(x, y), i.to_i] }
+      end
+      .to_h
 
   goal = Point.new(grid.each_key.map(&:x).max, grid.each_key.map(&:y).max)
 
-  distance(grid, Point.new(0,0), goal).first
+  distance(grid, Point.new(0, 0), goal).first
 end
 
 def part2
-  grid = $lines.each_with_index.flat_map do |l, y|
-    l.chars.each_with_index.map do |i, x|
-      [Point.new(x, y), i.to_i]
-    end
-  end.to_h
+  grid =
+    $lines
+      .each_with_index
+      .flat_map do |l, y|
+        l.chars.each_with_index.map { |i, x| [Point.new(x, y), i.to_i] }
+      end
+      .to_h
 
-  og_dims = Point.new(grid.each_key.map(&:x).max + 1, grid.each_key.map(&:y).max + 1)
+  og_dims =
+    Point.new(grid.each_key.map(&:x).max + 1, grid.each_key.map(&:y).max + 1)
 
   ng = {}
   4.times do |i|
-    modified = grid.map do |pt, v|
-      nv = v + i + 1
-      nv = nv % 10 + 1 if nv > 9
-      [Point.new(pt.x + og_dims.x * i.succ, pt.y), nv]
-    end.to_h
+    modified =
+      grid.map do |pt, v|
+        nv = v + i + 1
+        nv = nv % 10 + 1 if nv > 9
+        [Point.new(pt.x + og_dims.x * i.succ, pt.y), nv]
+      end.to_h
     ng.merge!(modified)
   end
   grid.merge!(ng)
   ng.clear
 
   4.times do |i|
-    modified = grid.map do |pt, v|
-      nv = v + i + 1
-      nv = nv % 10 + 1 if nv > 9
-      [Point.new(pt.x, pt.y + og_dims.y * i.succ), nv]
-    end.to_h
+    modified =
+      grid.map do |pt, v|
+        nv = v + i + 1
+        nv = nv % 10 + 1 if nv > 9
+        [Point.new(pt.x, pt.y + og_dims.y * i.succ), nv]
+      end.to_h
     ng.merge!(modified)
   end
   grid.merge!(ng)
@@ -104,7 +124,7 @@ def part2
   #   puts
   # end
 
-  distance(grid, Point.new(0,0), goal).first
+  distance(grid, Point.new(0, 0), goal).first
 end
 
 pp part1

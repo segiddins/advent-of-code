@@ -26,11 +26,9 @@ def r(s)
     when ']'
       depth -= 1
     when Integer
-
-
-      if depth > 4 && (right = s[i+2]).is_a?(Integer)
-        pred = s[0, i-1]
-        succ = s[(i+3)..-1]
+      if depth > 4 && (right = s[i + 2]).is_a?(Integer)
+        pred = s[0, i - 1]
+        succ = s[(i + 3)..-1]
 
         l = pred.rindex { |e| e.is_a?(Integer) }
         pred[l] = s[l] + left if l
@@ -45,7 +43,7 @@ def r(s)
         next
       elsif is_2p and left >= 10
         pred = s[0, i]
-        succ = s[(i+1)..-1]
+        succ = s[(i + 1)..-1]
 
         half = left / 2.0
         left = half.floor
@@ -65,24 +63,25 @@ end
 def mag(s)
   s = s.join
   loop do
-    return s.to_i unless s.sub!(/\[(\d+),(\d+)\]/) { ($1.to_i * 3 + $2.to_i * 2).to_s }
+    unless s.sub!(/\[(\d+),(\d+)\]/) { ($1.to_i * 3 + $2.to_i * 2).to_s }
+      return s.to_i
+    end
   end
 end
 
 def part1
-  $lines.map do |l|
-    l.scan(/[\[\],]|\d+/).map {|e| e =~ /\d+/ ? e.to_i : e }
-  end.reduce do |acc, elem|
-    r(%w([) + acc + [','] + elem + [']'])
-  end.yield_self(&method(:mag))
+  $lines
+    .map { |l| l.scan(/[\[\],]|\d+/).map { |e| e =~ /\d+/ ? e.to_i : e } }
+    .reduce { |acc, elem| r(%w[[] + acc + [','] + elem + [']']) }
+    .yield_self(&method(:mag))
 end
 
 def part2
-  $lines.map do |l|
-    s = l.scan(/[\[\],]|\d+/).map {|e| e =~ /\d+/ ? e.to_i : e }
-  end.permutation(2).map do |l, r|
-    mag r(%w([) + l + [','] + r + [']'])
-  end.max
+  $lines
+    .map { |l| s = l.scan(/[\[\],]|\d+/).map { |e| e =~ /\d+/ ? e.to_i : e } }
+    .permutation(2)
+    .map { |l, r| mag r(%w[[] + l + [','] + r + [']']) }
+    .max
 end
 
 pp part1

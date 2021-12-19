@@ -11,9 +11,7 @@ def part1
   max_y = $lines.length
   max_x = $lines[0].length
   $lines.each_with_index do |l, y|
-    l.chars.each_with_index do |i, x|
-      grid[Point.new(x+1, y+1)] = i.to_i
-    end
+    l.chars.each_with_index { |i, x| grid[Point.new(x + 1, y + 1)] = i.to_i }
   end
 
   100.times.sum do
@@ -23,13 +21,13 @@ def part1
     v = ->(pt) do
       ng[pt] += 1
       if ng[pt] > 9 && flashes.add?(pt)
-        pt.neighbors(1, min_x: 1, min_y: 1, max_x: max_x, max_y: max_y).each do |n|
-          v[n]
-        end
+        pt
+          .neighbors(1, min_x: 1, min_y: 1, max_x: max_x, max_y: max_y)
+          .each { |n| v[n] }
       end
     end
     grid.each_key(&v)
-    grid = ng.transform_values { |v| v > 9 ? 0 : v}
+    grid = ng.transform_values { |v| v > 9 ? 0 : v }
     flashes.count
   end
 end
@@ -39,9 +37,7 @@ def part2
   max_y = $lines.length
   max_x = $lines[0].length
   $lines.each_with_index do |l, y|
-    l.chars.each_with_index do |i, x|
-      grid[Point.new(x+1, y+1)] = i.to_i
-    end
+    l.chars.each_with_index { |i, x| grid[Point.new(x + 1, y + 1)] = i.to_i }
   end
 
   (0..1_000_000_000).find do
@@ -51,13 +47,13 @@ def part2
     v = ->(pt) do
       ng[pt] += 1
       if ng[pt] > 9 && flashes.add?(pt)
-        pt.neighbors(1, min_x: 1, min_y: 1, max_x: max_x, max_y: max_y).each do |n|
-          v[n]
-        end
+        pt
+          .neighbors(1, min_x: 1, min_y: 1, max_x: max_x, max_y: max_y)
+          .each { |n| v[n] }
       end
     end
     grid.each_key(&v)
-    grid = ng.transform_values { |v| v > 9 ? 0 : v}
+    grid = ng.transform_values { |v| v > 9 ? 0 : v }
     flashes.size == grid.size
   end.succ
 end

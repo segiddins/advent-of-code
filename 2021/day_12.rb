@@ -10,7 +10,7 @@ $lines = $input.split("\n")
 def part1
   graph = {}
   $lines.each do |l|
-    a, b = l.split(?-, 2)
+    a, b = l.split('-', 2)
     (graph[a] ||= []) << b
     (graph[b] ||= []) << a
   end
@@ -27,14 +27,20 @@ def part1
     partials.each do |a, bs|
       new_ = []
       bs.each do |path|
-        partials.fetch(path.last).each do |n|
-          next if i > 0 and n.last != 'end'
-          np = path + n
-          next if np.size <= 2 ** i
-          next if (np + [a]).group_by(&:itself).any? { |k, v| k == k.downcase && v.size > 1}
-          k += 1
-          new_ << np
-        end
+        partials
+          .fetch(path.last)
+          .each do |n|
+            next if i > 0 and n.last != 'end'
+            np = path + n
+            next if np.size <= 2**i
+            if (np + [a])
+                 .group_by(&:itself)
+                 .any? { |k, v| k == k.downcase && v.size > 1 }
+              next
+            end
+            k += 1
+            new_ << np
+          end
       end
       any = true unless bs.superset?(new_.to_set)
       bs.merge new_
@@ -49,7 +55,7 @@ end
 def part2
   graph = {}
   $lines.each do |l|
-    a, b = l.split(?-, 2)
+    a, b = l.split('-', 2)
     (graph[a] ||= []) << b
     (graph[b] ||= []) << a
   end
@@ -66,17 +72,22 @@ def part2
     partials.each do |a, bs|
       new_ = []
       bs.each do |path|
-        partials.fetch(path.last).each do |n|
-          nl = n.last
-          next if (i >= 1 && nl == a.downcase) && (i >= 1 && nl != 'end')
-          np = path + n
-          next if np.size <= 2 ** i
-          dups = (np + [a]).group_by(&:itself).select { |k, v| k == k.downcase && v.size > 1}
-          next if dups.size > 1
-          next if dups.values.any? { |v| v.size > 2 }
-          k += 1
-          new_ << np
-        end
+        partials
+          .fetch(path.last)
+          .each do |n|
+            nl = n.last
+            next if (i >= 1 && nl == a.downcase) && (i >= 1 && nl != 'end')
+            np = path + n
+            next if np.size <= 2**i
+            dups =
+              (np + [a])
+                .group_by(&:itself)
+                .select { |k, v| k == k.downcase && v.size > 1 }
+            next if dups.size > 1
+            next if dups.values.any? { |v| v.size > 2 }
+            k += 1
+            new_ << np
+          end
       end
       any = true unless bs.superset?(new_.to_set)
       bs.merge new_
@@ -86,13 +97,17 @@ def part2
     break unless any
   end
 
-  puts partials['start'].select { |p| p.last == 'end' }.map { |a| (['start'] + a).join(',') }.sort.size
+  puts partials['start']
+         .select { |p| p.last == 'end' }
+         .map { |a| (['start'] + a).join(',') }
+         .sort
+         .size
 end
 
 def part2
   graph = {}
   $lines.each do |l|
-    a, b = l.split(?-, 2)
+    a, b = l.split('-', 2)
     (graph[a] ||= []) << b
     (graph[b] ||= []) << a
   end
@@ -108,20 +123,19 @@ def part2
     large = pt == pt.upcase
     w_pt = t.map { |path| path + [pt] }.reject(&has_loops)
     return w_pt if pt == 'end'
-    
+
     w_pt.delete_if do |path|
-      dups = path.group_by(&:itself).select { |k, v| k == k.downcase && v.size > 1}
+      dups =
+        path.group_by(&:itself).select { |k, v| k == k.downcase && v.size > 1 }
       !seen.add?(path) || dups.size > 1 || dups.values.any? { |v| v.size > 2 }
     end unless large
 
     succ = graph[pt]
 
-    succ.flat_map do |s|
-      v[s, w_pt, seen]
-    end
+    succ.flat_map { |s| v[s, w_pt, seen] }
   end
 
-  v['start', [[]], Set.new].sort.map { |i| i.join(?,)}.size
+  v['start', [[]], Set.new].sort.map { |i| i.join(',') }.size
 end
 
 pp part1

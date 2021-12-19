@@ -5,20 +5,26 @@ require_relative '../aoc'
 $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 # $input = DATA.read
 $lines = $input.split("\n")
-$ns = $lines.first.split(?,).map(&:to_i)
-$boards = $lines[2..-1].join("\n").split("\n\n").map { |b| b.split("\n").map { |l| l.strip.split(/\s+/).map(&:to_i) } }
+$ns = $lines.first.split(',').map(&:to_i)
+$boards =
+  $lines[2..-1]
+    .join("\n")
+    .split("\n\n")
+    .map { |b| b.split("\n").map { |l| l.strip.split(/\s+/).map(&:to_i) } }
 
 def win?(board, nums)
-  board.any? { |l| l.all? {|x| nums.include?(x) } } ||
-  Matrix.rows(board).transpose.to_a.any? { |l| l.all? {|x| nums.include?(x) } }
+  board.any? { |l| l.all? { |x| nums.include?(x) } } ||
+    Matrix
+      .rows(board)
+      .transpose
+      .to_a
+      .any? { |l| l.all? { |x| nums.include?(x) } }
 end
 
 def part1
   1.upto($ns.size) do |l|
     s = Array($ns[0, l])
-    $boards.each do |b|
-      return b.flatten(1).-(s).sum * s.last if win?(b,  s)
-    end
+    $boards.each { |b| return b.flatten(1).-(s).sum * s.last if win?(b, s) }
   end
   nil
 end
@@ -27,12 +33,13 @@ def part2
   bs = $boards.dup
   1.upto($ns.size) do |l|
     s = Array($ns[0, l])
-    return bs.first.flatten(1).-(s).sum * s.last if bs.size == 1 && win?(bs.first, s)
+    if bs.size == 1 && win?(bs.first, s)
+      return bs.first.flatten(1).-(s).sum * s.last
+    end
     bs.reject! { |b| win?(b, s) }
   end
   nil
 end
-
 
 pp part1
 pp part2

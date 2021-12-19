@@ -24,7 +24,6 @@ def height(xv, yv, x1, x2, y1, y2)
     end
     yv -= 1
 
-
     max_y = [max_y, py].max
     break if px <= x2 and px >= x1 and py <= y2 and py >= y1
     return if px > x2 or py < y1
@@ -33,8 +32,12 @@ def height(xv, yv, x1, x2, y1, y2)
 end
 
 def part1
-  x1, x2, y1, y2 = $lines.first.scan(/x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)/).first.map(&:to_i)
-
+  x1, x2, y1, y2 =
+    $lines
+      .first
+      .scan(/x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)/)
+      .first
+      .map(&:to_i)
 
   max_h = 0
   1.upto(x2) do |vx|
@@ -46,14 +49,18 @@ def part1
 end
 
 def part2
-  x1, x2, y1, y2 = $lines.first.scan(/x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)/).first.map(&:to_i)
+  x1, x2, y1, y2 =
+    $lines
+      .first
+      .scan(/x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)/)
+      .first
+      .map(&:to_i)
 
-
-  1.upto(x2).sum do |vx|
-    y1.upto(-y1).count do |vy|
-      !height(vx, vy, x1, x2, y1, y2).nil?
+  1
+    .upto(x2)
+    .sum do |vx|
+      y1.upto(-y1).count { |vy| !height(vx, vy, x1, x2, y1, y2).nil? }
     end
-  end
 end
 
 pp part1

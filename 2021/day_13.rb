@@ -14,21 +14,27 @@ def fold(grid, along, width, height)
   case ax
   when 'x'
     nw, nh = v, height
+
     # nw - (pt.x - nw) => 2 * nw - pt.x
-    nm = grid.map { |pt| pt.x >= nw ? Point.new(2 * nw - pt.x, pt.y) : pt }.to_set
+    nm =
+      grid.map { |pt| pt.x >= nw ? Point.new(2 * nw - pt.x, pt.y) : pt }.to_set
     [nm, nw, nh]
   when 'y'
     nw, nh = width, v
-    nm = grid.map { |pt| pt.y >= nh ? Point.new(pt.x, 2 * nh - pt.y) : pt }.to_set
+    nm =
+      grid.map { |pt| pt.y >= nh ? Point.new(pt.x, 2 * nh - pt.y) : pt }.to_set
     [nm, nw, nh]
   end
 end
 
 def part1
-  dots = $lines.take_while { |l| l != "" }.map { |l| Point.new(*l.split(',', 2).map(&:to_i)) }
-  folds = $lines.grep(/fold/).flat_map { |l| l.scan(/along ([xy])=(\d+)/)}
+  dots =
+    $lines
+      .take_while { |l| l != '' }
+      .map { |l| Point.new(*l.split(',', 2).map(&:to_i)) }
+  folds = $lines.grep(/fold/).flat_map { |l| l.scan(/along ([xy])=(\d+)/) }
 
-  height, width =dots.map(&:y).max + 1, dots.map(&:x).max + 1
+  height, width = dots.map(&:y).max + 1, dots.map(&:x).max + 1
   grid = dots.to_set
 
   # 0.upto(height.pred) do |y|
@@ -39,36 +45,38 @@ def part1
   # end
   # puts
 
-  grid, width, height = folds[0, 1].reduce([grid, width, height]) do |(grid, width, height), fold|
-    fold(grid, fold, width, height).tap do |grid, width, height|
-      # 0.upto(height.pred) do |y|
-      #   0.upto(width.pred) do |x|
-      #     print grid.include?(Point.new(x, y)) ? '#' : '.'
-      #   end
-      #   puts
-      # end
-      # puts
+  grid, width, height =
+    folds[0, 1].reduce([grid, width, height]) do |(grid, width, height), fold|
+      fold(grid, fold, width, height).tap do |grid, width, height|
+        # 0.upto(height.pred) do |y|
+        #   0.upto(width.pred) do |x|
+        #     print grid.include?(Point.new(x, y)) ? '#' : '.'
+        #   end
+        #   puts
+        # end
+        # puts
+      end
     end
-  end
-
 
   grid.count
 end
 
 def part2
-  dots = $lines.take_while { |l| l != "" }.map { |l| Point.new(*l.split(',', 2).map(&:to_i)) }
-  folds = $lines.grep(/fold/).flat_map { |l| l.scan(/along ([xy])=(\d+)/)}
+  dots =
+    $lines
+      .take_while { |l| l != '' }
+      .map { |l| Point.new(*l.split(',', 2).map(&:to_i)) }
+  folds = $lines.grep(/fold/).flat_map { |l| l.scan(/along ([xy])=(\d+)/) }
 
-  height, width =dots.map(&:y).max + 1, dots.map(&:x).max + 1
+  height, width = dots.map(&:y).max + 1, dots.map(&:x).max + 1
   grid = dots.to_set
 
-  grid, width, height = folds.reduce([grid, width, height]) do |(grid, width, height), fold|
-    fold(grid, fold, width, height)
-  end
-  0.upto(height.pred) do |y|
-    0.upto(width.pred) do |x|
-      print grid.include?(Point.new(x, y)) ? '#' : '.'
+  grid, width, height =
+    folds.reduce([grid, width, height]) do |(grid, width, height), fold|
+      fold(grid, fold, width, height)
     end
+  0.upto(height.pred) do |y|
+    0.upto(width.pred) { |x| print grid.include?(Point.new(x, y)) ? '#' : '.' }
     puts
   end
   puts

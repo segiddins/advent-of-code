@@ -9,7 +9,10 @@ $bin = $lines.map { |l| l.chars.map(&:to_i) }
 
 def part1
   size = $bin.first.count
-  n = Array.new(size) { |x| $bin.map { |a| a[x] }.group_by(&:itself).max_by { |a, b| b.count }.first}
+  n =
+    Array.new(size) do |x|
+      $bin.map { |a| a[x] }.group_by(&:itself).max_by { |a, b| b.count }.first
+    end
   e = n.map { |x| (1 - x) }.join.to_i(2)
   g = n.join.to_i(2)
   pp e * g
@@ -20,14 +23,15 @@ def part2
   o = $bin.dup
   c = $bin.dup
   size.times do |x|
-    mc = o.map { |a| a[x] }.group_by(&:itself).max_by { |a, b| [b.count, a] }.first
-    lc = c.map { |a| a[x] }.group_by(&:itself).min_by { |a, b| [b.count, a] }.first
+    mc =
+      o.map { |a| a[x] }.group_by(&:itself).max_by { |a, b| [b.count, a] }.first
+    lc =
+      c.map { |a| a[x] }.group_by(&:itself).min_by { |a, b| [b.count, a] }.first
     o = o.select { |a| a[x] == mc } if o.size > 1
     c = c.select { |a| a[x] == lc } if c.size > 1
   end
   pp o.join.to_i(2) * c.join.to_i(2)
 end
-
 
 part1
 part2

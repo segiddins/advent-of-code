@@ -5,13 +5,17 @@ require_relative '../aoc'
 $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 # $input = DATA.read
 $lines = $input.split("\n")
-$inst = $lines.map { |l| a,b = l.split(' ', 2); [a, b.to_i] }
+$inst =
+  $lines.map do |l|
+    a, b = l.split(' ', 2)
+    [a, b.to_i]
+  end
 
 Pt = Struct.new(:x, :z, :aim)
 
 def part1
-  pos = Pt.new(0,0)
-  $inst.each do |a,b|
+  pos = Pt.new(0, 0)
+  $inst.each do |a, b|
     case a
     when 'forward'
       pos.x += b
@@ -26,8 +30,8 @@ def part1
 end
 
 def part2
-  pos = Pt.new(0,0, 0)
-  $inst.each do |a,b|
+  pos = Pt.new(0, 0, 0)
+  $inst.each do |a, b|
     case a
     when 'forward'
       pos.x += b
@@ -41,7 +45,6 @@ def part2
 
   pp pos.x * pos.z
 end
-
 
 part1
 part2

@@ -11,14 +11,16 @@ def part1
   height, width = $lines.size, $lines.first.size
 
   $lines.each_with_index do |l, y|
-    l.chars.each_with_index do |h, x|
-      map[Point.new(x + 1, y + 1)] = h.to_i
-    end
+    l.chars.each_with_index { |h, x| map[Point.new(x + 1, y + 1)] = h.to_i }
   end
 
-  map.select do |pt, h|
-    pt.non_diag_neighbors(1, min_x: 1, min_y: 1, max_x: width, max_y: height).all? { |n| map[n] > h }
-  end.sum { |_,h| h + 1}
+  map
+    .select do |pt, h|
+      pt
+        .non_diag_neighbors(1, min_x: 1, min_y: 1, max_x: width, max_y: height)
+        .all? { |n| map[n] > h }
+    end
+    .sum { |_, h| h + 1 }
 end
 
 def part2
@@ -26,27 +28,38 @@ def part2
   height, width = $lines.size, $lines.first.size
 
   $lines.each_with_index do |l, y|
-    l.chars.each_with_index do |h, x|
-      map[Point.new(x + 1, y + 1)] = h.to_i
+    l.chars.each_with_index { |h, x| map[Point.new(x + 1, y + 1)] = h.to_i }
+  end
+
+  lows =
+    map.select do |pt, h|
+      pt
+        .non_diag_neighbors(1, min_x: 1, min_y: 1, max_x: width, max_y: height)
+        .all? { |n| map[n] > h }
     end
-  end
 
-  lows = map.select do |pt, h|
-    pt.non_diag_neighbors(1, min_x: 1, min_y: 1, max_x: width, max_y: height).all? { |n| map[n] > h }
-  end
+  basins =
+    lows.map do |pt, _|
+      b = Set.new
+      v = ->(p) do
+        h = map[p]
+        return if h == 9 || !b.add?(p)
 
-  basins = lows.map { |pt, _| 
-    b = Set.new
-    v = -> (p) {
-      h = map[p]
-      return if h == 9 || !b.add?(p)
+        p
+          .non_diag_neighbors(
+            1,
+            min_x: 1,
+            min_y: 1,
+            max_x: width,
+            max_y: height
+          )
+          .select { |n| map[n] > h }
+          .each(&v)
+      end
+      v[pt]
+      b
+    end
 
-      p.non_diag_neighbors(1, min_x: 1, min_y: 1, max_x: width, max_y: height).select { |n| map[n] > h }.each(&v)
-    }
-    v[pt]
-    b
-  }
-  
   basins.map(&:size).sort[-3..-1].reduce(&:*)
 end
 
