@@ -40,6 +40,12 @@ def rotate(pitch, roll, yaw, pt)
   ].map(&:round)
 end
 
+# def rotate(rotation, point)
+#   [0, 1, 2].map { |idx| rotation[idx] * point[idx]}
+# end
+
+Pt3 = Struct.new(:x, :y, :z) {}
+
 def part1
   scanners = []
   $lines.each do |l|
@@ -52,13 +58,21 @@ def part1
   mutual_md = ->(beacons) do
     beacons
       .permutation(2)
-      .map { |(a, b)| [[a[0] - b[0], a[1] - b[1], a[2] - b[2]], [a, b].sort] }
+      .map do |(a, b)|
+        [[a[0] - b[0], a[1] - b[1], a[2] - b[2]].map(&:abs).sort, [a, b].sort]
+      end
       .sort
   end
 
   rotations = [PI / 2, PI, 0, 3 * PI / 2].*(3).permutation(3).uniq.sort
-
-  pp rotations.size
+  bvs = [[0, 0, 1], [0, 1, 0], [1, 0, 0]]
+  rotations =
+    rotations
+      .map { |r| [r, bvs.map { |bv| rotate(*r, bv) }] }
+      .each_with_object({}) do |(rotation, impact), inverse|
+        inverse[impact] ||= rotation
+      end
+      .values
 
   graph = Hash.new { |h, k| h[k] = [] }
   0.upto(scanners.length.pred) { |k| graph[k] }
@@ -85,7 +99,7 @@ def part1
       mutual_md[scanners[0]]
         .map { |(k, v)| [k, v, rotated.find { |(k1, _v1)| k1 == k }&.last] }
         .reject { |(_, _, v)| v.nil? }
-    pp matches.map { |(_, v1, _)| v1.last }.uniq.size
+    pp matches.map { |(_, v1, v2)| [v1, v2].map(&:last) }.size
 
     graph[0] << idx
     graph[idx] << 0
