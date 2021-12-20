@@ -4,7 +4,7 @@
 require_relative '../aoc'
 
 $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
-$input = DATA.read
+# $input = DATA.read
 $lines = $input.split("\n")
 
 PI = Math::PI
@@ -31,38 +31,52 @@ def rotate(pitch, roll, yaw, pt)
   azy = cosb * sinc
   azz = cosb * cosc
 
-  px, py, pz = pt
+  px, py, pz = pt.to_a
 
-  [
-    axx * px + axy * py + axz * pz,
-    ayx * px + ayy * py + ayz * pz,
-    azx * px + azy * py + azz * pz,
-  ].map(&:round)
+  Pt3.new(
+    *[
+      axx * px + axy * py + axz * pz,
+      ayx * px + ayy * py + ayz * pz,
+      azx * px + azy * py + azz * pz,
+    ].map(&:round),
+  )
 end
 
-# def rotate(rotation, point)
-#   [0, 1, 2].map { |idx| rotation[idx] * point[idx]}
-# end
+Pt3 =
+  Struct.new(:x, :y, :z) do
+    def <=>(other)
+      to_a <=> other.to_a
+    end
 
-Pt3 = Struct.new(:x, :y, :z) {}
+    def -(other)
+      self.class.new(x - other.x, y - other.y, z - other.z)
+    end
+
+    def +(other)
+      self.class.new(x + other.x, y + other.y, z + other.z)
+    end
+
+    def to_s
+      to_a.join(',')
+    end
+  end
+
+def mutual_md(beacons)
+  beacons
+    .permutation(2)
+    .map { |(a, b)| [[a.x - b.x, a.y - b.y, a.z - b.z].map(&:abs).sort, a] }
+    .sort
+    .to_h
+end
 
 def part1
   scanners = []
   $lines.each do |l|
     next if l.empty?
     next scanners << [] unless l =~ /(-?\d+),(-?\d+)(?:,(-?\d+))?/
-    scanners.last << [$1.to_i, $2.to_i, $3.to_i]
+    scanners.last << Pt3.new($1.to_i, $2.to_i, $3.to_i)
   end
   scanners.each(&:sort!)
-
-  mutual_md = ->(beacons) do
-    beacons
-      .permutation(2)
-      .map do |(a, b)|
-        [[a[0] - b[0], a[1] - b[1], a[2] - b[2]].map(&:abs).sort, [a, b].sort]
-      end
-      .sort
-  end
 
   rotations = [PI / 2, PI, 0, 3 * PI / 2].*(3).permutation(3).uniq.sort
   bvs = [[0, 0, 1], [0, 1, 0], [1, 0, 0]]
@@ -74,51 +88,65 @@ def part1
       end
       .values
 
-  graph = Hash.new { |h, k| h[k] = [] }
-  0.upto(scanners.length.pred) { |k| graph[k] }
-
-  path = {}
   positions = Array.new(scanners.size)
-  positions[0] = [0, 0, 0]
+  positions[0] = Pt3[0, 0, 0]
 
   loop do
-    break unless (v = graph.find { |k, a| k != 0 and a.empty? })
-    idx = v.first
+    candidates, anchors =
+      positions.each_with_index.partition { |pos, idx| pos.nil? }
+    [candidates, anchors].each { |l| l.map!(&:last) }
 
-    vr =
-      rotations.find do |r|
-        (
-          mutual_md[scanners[0]].map(&:first) &
-            mutual_md[scanners[idx].map { |d| rotate(*r, d) }].map(&:first)
-        ).size >= 12
+    # pp candidates: candidates, anchors: anchors
+
+    break if candidates.empty?
+
+    added_candidate =
+      candidates.find do |idx|
+        anchors.find do |anchor|
+          # pp candidate: idx, anchor: anchor
+
+          vr = nil
+          rotated = nil
+          matches = nil
+          translation = nil
+
+          rotations.each do |r|
+            rotated = mutual_md(scanners[idx].map { |s| rotate(*r, s) })
+            matches =
+              mutual_md(scanners[anchor])
+                .map { |(k, v)| [k, v, rotated[k]] }
+                .reject { |(_, _, v)| v.nil? }
+            translations =
+              matches
+                .map { |(d, v1, v2)| v1 - v2 }
+                .group_by(&:itself)
+                .transform_values(&:size)
+                .sort_by(&:last)
+                .to_h
+            translation, ct = translations.max_by(&:last)
+            next unless ct and ct >= 12
+            break vr = r
+          end
+          next unless vr
+
+          scanners[idx].map! { |d| rotate(*vr, d) }
+          positions[idx] = translation + positions[anchor]
+        end
       end
-    scanners[idx].map! { |d| rotate(*vr, d) }
 
-    rotated = mutual_md[scanners[idx]]
-    matches =
-      mutual_md[scanners[0]]
-        .map { |(k, v)| [k, v, rotated.find { |(k1, _v1)| k1 == k }&.last] }
-        .reject { |(_, _, v)| v.nil? }
-    pp matches.map { |(_, v1, v2)| [v1, v2].map(&:last) }.size
-
-    graph[0] << idx
-    graph[idx] << 0
-
-    path[[0, idx]] = vr
-
-    pp graph
-    pp path
-
-    break
+    raise 'Did not add new candidate' unless added_candidate
   end
-end
 
-def part2
-  nil
+  beacons = Set.new
+  positions.each_with_index do |trans, idx|
+    scanners[idx].each { |bc| beacons << bc + trans }
+  end
+
+  pp beacons.size
+  positions.combination(2).map { |a, b| (a - b).to_a.sum(&:abs) }.max
 end
 
 pp part1
-pp part2
 
 __END__
 --- scanner 0 ---
