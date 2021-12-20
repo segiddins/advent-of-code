@@ -63,9 +63,10 @@ Pt3 =
 
 def mutual_md(beacons)
   beacons
-    .permutation(2)
-    .map { |(a, b)| [[a.x - b.x, a.y - b.y, a.z - b.z].map(&:abs).sort, a] }
-    .sort
+    .combination(2)
+    .map do |(a, b)|
+      [[a.x - b.x, a.y - b.y, a.z - b.z].map(&:abs).sort, [a, b].min]
+    end
     .to_h
 end
 
@@ -90,6 +91,8 @@ def part1
 
   positions = Array.new(scanners.size)
   positions[0] = Pt3[0, 0, 0]
+  rotateds = Array.new(scanners.size)
+  rotateds[0] = mutual_md(scanners[0])
 
   loop do
     candidates, anchors =
@@ -107,30 +110,26 @@ def part1
 
           vr = nil
           rotated = nil
-          matches = nil
           translation = nil
 
-          rotations.each do |r|
-            rotated = mutual_md(scanners[idx].map { |s| rotate(*r, s) })
-            matches =
-              mutual_md(scanners[anchor])
-                .map { |(k, v)| [k, v, rotated[k]] }
-                .reject { |(_, _, v)| v.nil? }
-            translations =
-              matches
-                .map { |(d, v1, v2)| v1 - v2 }
-                .group_by(&:itself)
-                .transform_values(&:size)
-                .sort_by(&:last)
-                .to_h
-            translation, ct = translations.max_by(&:last)
-            next unless ct and ct >= 12
-            break vr = r
-          end
+          vr =
+            rotations.find do |r|
+              rotated = mutual_md(scanners[idx].map { |s| rotate(*r, s) })
+              matches = Hash.new { 0 }
+
+              rotateds[anchor].each do |dist, pt|
+                next unless r = rotated[dist]
+                matches[pt - r] += 1
+              end
+
+              translation, ct = matches.max_by(&:last)
+              ct and ct >= 12
+            end
           next unless vr
 
           scanners[idx].map! { |d| rotate(*vr, d) }
           positions[idx] = translation + positions[anchor]
+          rotateds[idx] = rotated
         end
       end
 
