@@ -9,22 +9,31 @@ $lines = $input.split("\n")
 
 LARGE = Hash.new { |h, k| h[k] = k == k.upcase }
 
-def visit(pt, t, seen, graph, pt1)
-  return [] if t.empty? && pt != 'start'
+def invalid(path, pt1)
+  seen = []
+  dup = nil
+  path.find do |elt|
+    next if LARGE[elt]
+    ct = seen.count(elt)
+    if ct > 0
+      next true if pt1 || dup
+      dup = elt
+    end
+    seen << elt
+    false
+  end
+end
+
+def visit(pt, t, graph, pt1)
   w_pt = t.map { |path| path + [pt] }
   return w_pt if pt == 'end'
 
   unless LARGE[pt]
-    w_pt.delete_if do |path|
-      dups = path.group_by(&:itself).select { |k, v| v.size > 1 && !LARGE[k] }
-      dups.size > (pt1 ? 0 : 1) || dups.each_value.any? { |v| v.size > 2 } ||
-        !seen.add?(path)
-    end
+    w_pt.delete_if { |path| invalid(path, pt1) }
+    return [] if w_pt.empty?
   end
 
-  succ = graph[pt]
-
-  succ.flat_map { |s| visit(s, w_pt, seen, graph, pt1) }
+  graph[pt].flat_map { |s| visit(s, w_pt, graph, pt1) }
 end
 
 def part1
@@ -37,7 +46,7 @@ def part1
   graph['end'] = []
   graph.each_value { |v| v.delete('start') }
 
-  visit('start', [[]], Set.new, graph, true).sort.map { |i| i.join(',') }.size
+  visit('start', [[]], graph, true).size
 end
 
 def part2
@@ -50,7 +59,7 @@ def part2
   graph['end'] = []
   graph.each_value { |v| v.delete('start') }
 
-  visit('start', [[]], Set.new, graph, false).sort.map { |i| i.join(',') }.size
+  visit('start', [[]], graph, false).size
 end
 
 pp part1
