@@ -7,6 +7,10 @@ $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
 # $input = DATA.read
 $lines = $input.split("\n")
 
+def wrap(l, r)
+  ['['] + l + [','] + r + [']']
+end
+
 def r(s)
   i = 0
   is_2p = false
@@ -49,7 +53,9 @@ def r(s)
         left = half.floor
         right = half.ceil
 
-        s = pred + ['[', left, ',', right, ']'] + succ
+        s.delete_at(i)
+        s.insert(i, *wrap([left], [right]))
+
         i = 0
         is_2p = false
         depth = 0
@@ -63,7 +69,7 @@ end
 def mag(s)
   s = s.join
   loop do
-    unless s.sub!(/\[(\d+),(\d+)\]/) { ($1.to_i * 3 + $2.to_i * 2).to_s }
+    unless s.gsub!(/\[(\d+),(\d+)\]/) { ($1.to_i * 3 + $2.to_i * 2).to_s }
       return s.to_i
     end
   end
@@ -72,15 +78,15 @@ end
 def part1
   $lines
     .map { |l| l.scan(/[\[\],]|\d+/).map { |e| e =~ /\d+/ ? e.to_i : e } }
-    .reduce { |acc, elem| r(%w[[] + acc + [','] + elem + [']']) }
+    .reduce { |acc, elem| r(wrap(acc, elem)) }
     .yield_self(&method(:mag))
 end
 
 def part2
   $lines
-    .map { |l| s = l.scan(/[\[\],]|\d+/).map { |e| e =~ /\d+/ ? e.to_i : e } }
+    .map { |l| l.scan(/[\[\],]|\d+/).map { |e| e =~ /\d+/ ? e.to_i : e } }
     .permutation(2)
-    .map { |l, r| mag r(%w[[] + l + [','] + r + [']']) }
+    .map { |l, r| mag r(wrap(l, r)) }
     .max
 end
 
