@@ -117,13 +117,11 @@ def part1
               rotated = mutual_md(scanners[idx].map { |s| rotate(*r, s) })
               matches = Hash.new { 0 }
 
-              rotateds[anchor].each do |dist, pt|
+              rotateds[anchor].find do |dist, pt|
                 next unless r = rotated[dist]
-                matches[pt - r] += 1
+                diff = pt - r
+                break translation = diff if (matches[diff] += 1) >= 12
               end
-
-              translation, ct = matches.max_by(&:last)
-              ct and ct >= 12
             end
           next unless vr
 
