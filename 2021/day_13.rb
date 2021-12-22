@@ -79,11 +79,10 @@ def part2
     0.upto(width.pred) { |x| print grid.include?(Point.new(x, y)) ? '#' : '.' }
     puts
   end
-  puts
 end
 
 pp part1
-pp part2
+part2
 
 __END__
 6,10

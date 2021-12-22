@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'open3'
+require 'yaml'
+
+def record_answer(year, day, part, answer)
+  path = File.expand_path("#{year}/answers.yaml", __dir__)
+  existing_contents =
+    File.file?(path) ? File.open(path, &YAML.method(:load)) : {}
+  answer = answer.to_i if answer.is_a?(String) && /\A\d+\z/.match?(answer)
+  existing_contents["Day #{day}"] ||= {}
+  existing_contents["Day #{day}"]["Part #{part}"] = answer
+  existing_contents =
+    existing_contents.sort_by { |k, _| k.split(' ', 2)[1].to_i }.to_h
+  File.open(path, 'w') { |f| YAML.dump(existing_contents, f) }
+end
+
+def benchmark(year, day)
+  json_path = "#{year}/day_#{day}.hyperfine.json"
+  system(
+    'hyperfine',
+    '--style',
+    'full',
+    # '--show-output',
+    '--export-json',
+    json_path,
+    "ruby #{year}/day_#{day}.rb",
+  )
+  timing = File.open(json_path, &YAML.method(:load)).dig('results', 0)
+  record_answer(year, day, 'Timing', timing.reject { |_k, v| v.is_a?(Array) })
+  File.delete(json_path)
+end
+
+def run(year, day, realtime = true)
+  file = "#{year}/day_#{day}.rb"
+  out =
+    if realtime
+      puts file
+      Open3.pipeline_r(
+        %W[time ruby #{file}] << { err: %i[child out] },
+        %W[tee /dev/fd/4] << { 4 => :out },
+      ) do |out, thr|
+        status = thr[0].value
+        unless status.success?
+          raise "Running #{file} failed: #{status.to_i}\n#{out}"
+        end
+        out.read
+      end
+    else
+      Open3.popen2e(*%W[time ruby #{file}]) do |_, out, thr|
+        status = thr.value
+        unless status.success?
+          raise "Running #{file} failed: #{status.to_i}\n#{out.read}"
+        end
+        out.read
+      end
+    end.split("\n")
+
+  first = out.slice!(0, 1).first
+  time = out.slice!(-1, 1).last
+  second = out.join("\n")
+
+  record_answer(year, day, 1, first) unless first == 'nil'
+  record_answer(year, day, 2, second) unless second == 'nil'
+  unless realtime
+    puts "#{file} #{time}:"
+    puts "\t#{first}"
+    puts "\t#{second}" unless second == 'nil'
+  end
+end
+
+21.upto(21) { |d| benchmark(2021, d) }

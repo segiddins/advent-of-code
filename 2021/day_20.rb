@@ -27,7 +27,9 @@ def enhance(img, algo, default)
           end
         end
 
-      new_img[pt] = algo[neighbors]
+      nv = algo[neighbors]
+      next if nv == default
+      new_img[pt] = nv
     end
   end
 
@@ -53,6 +55,7 @@ def part1
       .flat_map do |l, y|
         l.chars.each_with_index.map { |p, x| [Point.new(x, y), p] }
       end
+      .reject { |k, v| v == '.' }
       .to_h
   image.default_proc = ->(h, k) { '.' }
 
@@ -82,6 +85,7 @@ def part2
       .flat_map do |l, y|
         l.chars.each_with_index.map { |p, x| [Point.new(x, y), p] }
       end
+      .reject { |k, v| v == '.' }
       .to_h
   image.default_proc = ->(h, k) { '.' }
 
