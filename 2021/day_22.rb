@@ -150,19 +150,21 @@ def part1
       )
     end
 
-  (-50)
-    .upto(50)
-    .sum do |x|
-      (-50)
-        .upto(50)
-        .sum do |y|
-          (-50)
-            .upto(50)
-            .count do |z|
-              insts.reduce(false) { |is_on, inst| inst.call(is_on, x, y, z) }
-            end
-        end
+  root =
+    Region.new(
+      false,
+      Range.new(-50, 50),
+      Range.new(-50, 50),
+      Range.new(-50, 50),
+      [],
+    )
+
+  regions =
+    insts.reduce([root]) do |regions, inst|
+      regions.flat_map { |r| r.run_inst(inst) || r }.uniq
     end
+
+  regions.sum { |r| r.is_on ? r.size : 0 }
 end
 
 def part2
