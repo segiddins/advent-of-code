@@ -70,4 +70,4 @@ def run(year, day, realtime = true)
   end
 end
 
-22.upto(22) { |d| run(2021, d) }
+22.upto(22) { |d| run(2021, d, true) }

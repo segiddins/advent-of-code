@@ -19,24 +19,10 @@ class Range
   def overlap(other)
     Range.new([self.begin, other.begin].max, [self.end, other.end].min)
   end
-
-  def ordered
-    Range.new(*[self.begin, self.end].minmax)
-  end
-
-  def thing(dir)
-    # l, r =
-  end
-end
-
-class W
-  def initialize
-    @a = Array.new(100 * 100 * 100)
-  end
 end
 
 Region =
-  Struct.new(:is_on, :x, :y, :z, :children) do
+  Struct.new(:is_on, :x, :y, :z) do
     def run_inst(inst)
       return if inst.on == is_on
 
@@ -44,18 +30,9 @@ Region =
         return
       end
 
-      # 3 possibilities for overlap
-      # (1) superset -> keep
-      # (2) subset -> split into (upto 27)
-
-      return(
-        [
-          dup.tap do |r|
-            r.is_on = inst.on
-            r.children = []
-          end,
-        ]
-      ) if inst.x.cover?(x) && inst.y.cover?(y) && inst.z.cover?(z)
+      if inst.x.cover?(x) && inst.y.cover?(y) && inst.z.cover?(z)
+        return [tap { |r| r.is_on = inst.on }]
+      end
 
       [-1, 0, 1].flat_map do |dx|
           [-1, 0, 1].flat_map do |dy|
@@ -98,7 +75,6 @@ Region =
                 x_,
                 y_,
                 z_,
-                [],
               )
             end
           end
@@ -110,33 +86,9 @@ Region =
     def size
       x.size * y.size * z.size
     end
-
-    def on_size(inside_on = false)
-      v_self =
-        if inside_on && !is_on
-          -size
-        elsif is_on
-          size
-        else
-          # pp "no diff: #{self.x} #{self.y} #{self.z}"
-          0
-        end
-
-      c_sum = children&.sum { |c| c.on_size(is_on) } || 0
-
-      v_self + c_sum
-    end
   end
 
-Inst =
-  Struct.new(:on, :x, :y, :z) do
-    def call(is_on, x_, y_, z_)
-      return is_on if on == is_on
-      return is_on unless x.include?(x_) && y.include?(y_) && z.include?(z_)
-
-      on
-    end
-  end
+Inst = Struct.new(:on, :x, :y, :z)
 
 def part1
   insts =
@@ -156,7 +108,6 @@ def part1
       Range.new(-50, 50),
       Range.new(-50, 50),
       Range.new(-50, 50),
-      [],
     )
 
   regions =
@@ -185,7 +136,6 @@ def part2
       Range.new(-1_000_000_000, 1_000_000_000),
       Range.new(-1_000_000_000, 1_000_000_000),
       Range.new(-1_000_000_000, 1_000_000_000),
-      [],
     )
 
   regions =
