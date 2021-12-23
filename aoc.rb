@@ -93,3 +93,9 @@ class Array
     first
   end
 end
+
+class Range
+  def overlaps?(other)
+    cover?(other.first) || other.cover?(first)
+  end
+end
