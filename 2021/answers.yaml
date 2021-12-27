@@ -269,3 +269,8 @@ Day 22:
     max: 0.09042878378000001
   Part 1: 601104
   Part 2: 1262883317822267
+Day 23:
+  Part 1: 'false'
+  Part 2: |-
+    false
+    nil
