@@ -4,7 +4,7 @@
 require_relative '../aoc'
 
 $input = File.read(__FILE__.sub(/\.rb\z/, '.txt'))
-$input = DATA.read
+# $input = DATA.read
 $lines = $input.split("\n")
 
 COST = { 'A' => 1, 'B' => 10, 'C' => 100, 'D' => 1000 }
@@ -21,22 +21,6 @@ def read_grid(s)
       end
     end
   grid
-end
-
-class PriorityQueue
-  def initialize
-    @h = Hash.new { |h, k| h[k] = [] }
-  end
-
-  def push(e, p = e)
-    @h[p] << e
-  end
-
-  def pop
-    min_p = @h.each_key.min
-    a = @h[min_p]
-    a.pop.tap { @h.delete(min_p) if a.empty? }
-  end
 end
 
 def print_grid(grid)
@@ -104,7 +88,7 @@ def solve(grid)
         end
       pt
         .x
-        .downto(0) do |x_|
+        .downto(1) do |x_|
           next if [3, 5, 7, 9].include?(x_)
           break if current[Point.new(x_, 1)] != '.'
           hallway_x_options << x_
@@ -114,9 +98,6 @@ def solve(grid)
         .map { |x| Point.new(x, 1) }
         .each do |hw|
           prime = current.merge(pt => '.', hw => v)
-
-          # puts 'Prime'
-          # print_grid prime
 
           next_cost =
             cost_so_far[current] +
@@ -129,8 +110,8 @@ def solve(grid)
             pq.push(
               prime,
               [
-                # -current.count { |pt, v| settled?(current, pt, v, bottom_y) },
-                next_cost,
+                current.count { |pt, v| settled?(current, pt, v, bottom_y) },
+                -next_cost,
               ],
             )
           end
@@ -144,35 +125,31 @@ def solve(grid)
 
         # make sure can move horizontal
         if Range
-             .new(*[pt.x, desired_x].minmax)
+             .new(*[pt.x, desired_x].sort)
              .any? do |x_opt|
                pt_opt = Point.new(x_opt, 1)
                pt_opt != pt && current[pt_opt] != '.'
              end
+          # hallway blocked, so can't move into desired room
           next
         end
 
-        top = Point.new(desired_x, 2)
-        next unless current[top] == '.'
+        room_clear =
+          2
+            .upto(bottom_y)
+            .all? { |y| ['.', v].include?(current[Point.new(desired_x, y)]) }
+        next unless room_clear
 
-        bottom = Point.new(desired_x, 3)
+        move_y =
+          2
+            .upto(bottom_y)
+            .select { |y| current[Point.new(desired_x, y)] == '.' }
+            .max
 
         moves = (pt.x - desired_x).abs
         moves += pt.y - 1 # moves needed to get up to hallway
-        prime = nil
-
-        case current[bottom]
-        when '.'
-          # pp v => { pt => bottom }
-          prime = current.merge(bottom => v, pt => '.')
-          moves += 2
-        when v
-          # pp v => { pt => top }
-          prime = current.merge(top => v, pt => '.')
-          moves += 1
-        else
-          next
-        end
+        moves += move_y - 1 # moves needed to get down into room
+        prime = current.merge(Point.new(desired_x, move_y) => v, pt => '.')
 
         next_cost = cost_so_far[current] + COST[v] * moves
         best_next_cost = cost_so_far[prime]
@@ -183,8 +160,8 @@ def solve(grid)
           pq.push(
             prime,
             [
-              # -current.count { |pt, v| settled?(current, pt, v, bottom_y) },
-              next_cost,
+              current.count { |pt, v| settled?(current, pt, v, bottom_y) },
+              -next_cost,
             ],
           )
         end
@@ -221,8 +198,6 @@ def part2
   #D#C#B#A#
   #D#B#A#C#
     S
-
-  puts lines
 
   solve(read_grid lines.join("\n"))
 end
