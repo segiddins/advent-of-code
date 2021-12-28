@@ -62,14 +62,14 @@ def solve(grid)
   bottom_y = goal.each_key.map(&:y).max
 
   while current = pq.pop
-    move_options =
-      current
-        .reject { |pt, v| v == '.' }
-        .reject do |pt, v|
-          # remove those that have finally made it to their room bottom!
+    break if current == goal
 
-          settled?(current, pt, v, bottom_y)
-        end
+    move_options =
+      current.reject do |pt, v|
+        # remove those that have finally made it to their room bottom!
+
+        v == '.' || settled?(current, pt, v, bottom_y)
+      end
 
     in_hallway = move_options.select { |pt, _| pt.y == 1 }
     unblocked_in_room =
@@ -107,13 +107,7 @@ def solve(grid)
             cost_so_far[prime] = next_cost
             came_from[prime] = current
 
-            pq.push(
-              prime,
-              [
-                current.count { |pt, v| settled?(current, pt, v, bottom_y) },
-                -next_cost,
-              ],
-            )
+            pq.push(prime, -next_cost)
           end
         end
     end
@@ -124,32 +118,34 @@ def solve(grid)
         desired_x = GOALS[v]
 
         # make sure can move horizontal
-        if Range
-             .new(*[pt.x, desired_x].sort)
-             .any? do |x_opt|
-               pt_opt = Point.new(x_opt, 1)
-               pt_opt != pt && current[pt_opt] != '.'
-             end
-          # hallway blocked, so can't move into desired room
-          next
+        # next if hallway blocked, so can't move into desired room
+        if desired_x < pt.x
+          if desired_x
+               .upto(pt.x.pred)
+               .any? { |x| current[Point.new(x, 1)] != '.' }
+            next
+          end
+        else
+          if desired_x
+               .downto(pt.x.succ)
+               .any? { |x| current[Point.new(x, 1)] != '.' }
+            next
+          end
         end
 
-        room_clear =
+        room =
           2
             .upto(bottom_y)
-            .all? { |y| ['.', v].include?(current[Point.new(desired_x, y)]) }
-        next unless room_clear
+            .map { |y| Point.new(desired_x, y) }
+            .group_by { |pt| current[pt] }
+        next if !room.keys.-(['.', v]).empty?
 
-        move_y =
-          2
-            .upto(bottom_y)
-            .select { |y| current[Point.new(desired_x, y)] == '.' }
-            .max
+        desired = room['.'].max_by(&:y)
 
         moves = (pt.x - desired_x).abs
         moves += pt.y - 1 # moves needed to get up to hallway
-        moves += move_y - 1 # moves needed to get down into room
-        prime = current.merge(Point.new(desired_x, move_y) => v, pt => '.')
+        moves += desired.y - 1 # moves needed to get down into room
+        prime = current.merge(desired => v, pt => '.')
 
         next_cost = cost_so_far[current] + COST[v] * moves
         best_next_cost = cost_so_far[prime]
@@ -157,13 +153,7 @@ def solve(grid)
           cost_so_far[prime] = next_cost
           came_from[prime] = current
 
-          pq.push(
-            prime,
-            [
-              current.count { |pt, v| settled?(current, pt, v, bottom_y) },
-              -next_cost,
-            ],
-          )
+          pq.push(prime, -next_cost)
         end
       end
   end
