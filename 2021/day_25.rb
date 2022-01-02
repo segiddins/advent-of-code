@@ -9,13 +9,11 @@ $lines = $input.split("\n")
 
 def print_grid(cukes, max_x, max_y)
   0.upto(max_y) do |y|
-  0.upto(max_x) do |x|
-    print cukes[Point.new(x, y)]
+    0.upto(max_x) { |x| print cukes[Point.new(x, y)] }
+    puts
   end
   puts
-end
-puts
-cukes
+  cukes
 end
 
 def move(cukes, max_x, max_y)
@@ -47,9 +45,7 @@ end
 def part1
   cukes = {}
   $lines.each_with_index do |l, y|
-    l.chars.each_with_index do |c, x|
-      cukes[Point.new(x, y)] = c
-    end
+    l.chars.each_with_index { |c, x| cukes[Point.new(x, y)] = c }
   end
 
   max_x = cukes.each_key.map(&:x).max
@@ -69,8 +65,7 @@ def part1
   iters
 end
 
-def part2
-end
+def part2; end
 
 pp part1
 pp part2

@@ -74,7 +74,7 @@ Region =
                 (dx == 0 && dy == 0 && dz == 0) ? inst.on : is_on,
                 x_,
                 y_,
-                z_,
+                z_
               )
             end
           end
@@ -98,7 +98,7 @@ def part1
         $1 == 'on',
         Range.new($2.to_i, $3.to_i),
         Range.new($4.to_i, $5.to_i),
-        Range.new($6.to_i, $7.to_i),
+        Range.new($6.to_i, $7.to_i)
       )
     end
 
@@ -107,7 +107,7 @@ def part1
       false,
       Range.new(-50, 50),
       Range.new(-50, 50),
-      Range.new(-50, 50),
+      Range.new(-50, 50)
     )
 
   regions =
@@ -126,7 +126,7 @@ def part2
         $1 == 'on',
         Range.new($2.to_i, $3.to_i),
         Range.new($4.to_i, $5.to_i),
-        Range.new($6.to_i, $7.to_i),
+        Range.new($6.to_i, $7.to_i)
       )
     end
 
@@ -135,7 +135,7 @@ def part2
       false,
       Range.new(-1_000_000_000, 1_000_000_000),
       Range.new(-1_000_000_000, 1_000_000_000),
-      Range.new(-1_000_000_000, 1_000_000_000),
+      Range.new(-1_000_000_000, 1_000_000_000)
     )
 
   regions =

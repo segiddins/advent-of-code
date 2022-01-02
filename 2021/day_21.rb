@@ -105,7 +105,7 @@ def part2
                 world.s1 + new_p,
                 world.s2,
                 new_p,
-                world.p2,
+                world.p2
               )
             ] +=
               count * freq
@@ -119,7 +119,7 @@ def part2
                 world.s1,
                 world.s2 + new_p,
                 world.p1,
-                new_p,
+                new_p
               )
             ] +=
               count * freq

@@ -37,8 +37,8 @@ def rotate(pitch, roll, yaw, pt)
     *[
       axx * px + axy * py + axz * pz,
       ayx * px + ayy * py + ayz * pz,
-      azx * px + azy * py + azz * pz,
-    ].map(&:round),
+      azx * px + azy * py + azz * pz
+    ].map(&:round)
   )
 end
 

@@ -109,7 +109,7 @@ def part1
   sections.map do |sect|
     { div_z: sect.dig(4, 2), add_y: sect.dig(-3, 2), add_x: sect.dig(5, 2) }
   end
-  
+
   # push +6
   # push +12
   #   push +8
@@ -125,12 +125,7 @@ def part1
   # pop if top of stack -9 == digit
   # pop if top of stack == digit
 
-  digits = [
-    3, 6, 9, 6, 
-    9, 7, 7, 2, 
-    9, 7, 9, 1,
-    9, 9
-  ]
+  digits = [3, 6, 9, 6, 9, 7, 7, 2, 9, 7, 9, 1, 9, 9]
 
   # 36969772979199 too low {0=>3, 1=>6, 2=>9, 3=>6, 4=>9, 5=>7, 6=>7, 7=>2, 8=>9, 9=>7, 10=>9, 11=>1, 12=>9, 13=>9}
   # 36969994977199 wrong   {0=>3, 1=>6, 2=>9, 3=>6, 4=>9, 5=>9, 6=>9, 7=>4, 8=>9, 9=>7, 10=>7, 11=>1, 12=>9, 13=>9}
@@ -141,27 +136,34 @@ def part1
   # [0] + 3 == [-1] => [-1] - [0] = 6
   digits[-1] = 9
   digits[0] = 3
+
   # [1] + 12 == [-2] + 9 => [-2] - [1] = 3
   digits[-2] = 9
   digits[1] = 6
+
   # [2] + 8 == [3] + 11 => [3] - [2] = -3
   digits[3] = 6
   digits[2] = 9
+
   # [4] + 7 == [-3] + 15 => [-3] - [4] = -8
   digits[-3] = 1
-  digits[4] =  9
+  digits[4] = 9
+
   # [5] + 12 == [-4] + 10 => [-4] - [5] = 2
   digits[-4] = 9
   digits[5] = 7
+
   # [6] + 2 == [7] + 7 => [7] - [6] = -5
   digits[7] = 4
   digits[6] = 9
+
   # [8] + 4 == [-5] + 6 => [-5] - [8] = -2
   digits[-5] = 7
   digits[8] = 9
 
-  ALU.new(0, 0, 0, 0, digits.dup).run_many(sections[0, digits.size].flatten(1)) 
-          # .tap { |z| pp z: z.to_s(26)}
+  ALU.new(0, 0, 0, 0, digits.dup).run_many(sections[0, digits.size].flatten(1))
+
+  # .tap { |z| pp z: z.to_s(26)}
   digits.each_with_index.to_a.map(&:reverse).to_h
   digits.join.to_i
 end
@@ -177,34 +179,41 @@ def part2
       end
       .compact
 
-      digits = Array.new(14) { 0 }
+  digits = Array.new(14) { 0 }
 
-      # [0] + 3 == [-1] => [-1] - [0] = 6
-      digits[-1] = 7
-      digits[0] = 1
-      # [1] + 12 == [-2] + 9 => [-2] - [1] = 3
-      digits[-2] = 4
-      digits[1] = 1
-      # [2] + 8 == [3] + 11 => [3] - [2] = -3
-      digits[3] = 1
-      digits[2] = 4
-      # [4] + 7 == [-3] + 15 => [-3] - [4] = -8
-      digits[-3] = 1
-      digits[4] =  9
-      # [5] + 12 == [-4] + 10 => [-4] - [5] = 2
-      digits[-4] = 3
-      digits[5] = 1
-      # [6] + 2 == [7] + 7 => [7] - [6] = -5
-      digits[7] = 1
-      digits[6] = 6
-      # [8] + 4 == [-5] + 6 => [-5] - [8] = -2
-      digits[-5] = 1
-      digits[8] = 3
-    
-      ALU.new(0, 0, 0, 0, digits.dup).run_many(sections[0, digits.size].flatten(1)) 
-              # .tap { |z| pp z: z.to_s(26)}
-      digits.each_with_index.to_a.map(&:reverse).to_h
-      digits.join.to_i
+  # [0] + 3 == [-1] => [-1] - [0] = 6
+  digits[-1] = 7
+  digits[0] = 1
+
+  # [1] + 12 == [-2] + 9 => [-2] - [1] = 3
+  digits[-2] = 4
+  digits[1] = 1
+
+  # [2] + 8 == [3] + 11 => [3] - [2] = -3
+  digits[3] = 1
+  digits[2] = 4
+
+  # [4] + 7 == [-3] + 15 => [-3] - [4] = -8
+  digits[-3] = 1
+  digits[4] = 9
+
+  # [5] + 12 == [-4] + 10 => [-4] - [5] = 2
+  digits[-4] = 3
+  digits[5] = 1
+
+  # [6] + 2 == [7] + 7 => [7] - [6] = -5
+  digits[7] = 1
+  digits[6] = 6
+
+  # [8] + 4 == [-5] + 6 => [-5] - [8] = -2
+  digits[-5] = 1
+  digits[8] = 3
+
+  ALU.new(0, 0, 0, 0, digits.dup).run_many(sections[0, digits.size].flatten(1))
+
+  # .tap { |z| pp z: z.to_s(26)}
+  digits.each_with_index.to_a.map(&:reverse).to_h
+  digits.join.to_i
 end
 
 pp part1
