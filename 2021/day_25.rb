@@ -19,27 +19,36 @@ end
 def move(cukes, max_x, max_y)
   nc = cukes.dup
 
-  right = ->(pt) { Point.new(pt.x.succ % max_x.succ, pt.y) }
-  down = ->(pt) { Point.new(pt.x, pt.y.succ % max_y.succ) }
+  right = ->(pt) { Point.new(pt.x == max_x ? 0 : pt.x + 1, pt.y) }
+  down = ->(pt) { Point.new(pt.x, pt.y == max_y ? 0 : pt.y + 1) }
 
-  east_facing = cukes.select { |_, v| v == '>' }
-  east_facing.each_key do |pt|
+  has_changes = false
+
+  east_facing = []
+  south_facing = []
+
+  cukes.each { |pt, v| v == '>' ? east_facing << pt : south_facing << pt }
+
+  east_facing.each do |pt|
     r = right[pt]
-    next unless cukes[r] == '.'
+    next if cukes.key?(r)
 
-    nc.merge!(r => '>', pt => '.')
+    has_changes = true
+    nc[r] = '>'
+    nc.delete(pt)
   end
   cukes = nc.dup
 
-  south_facing = cukes.select { |_, v| v == 'v' }
-  south_facing.each_key do |pt|
+  south_facing.each do |pt|
     d = down[pt]
-    next unless cukes[d] == '.'
+    next if cukes.key?(d)
 
-    nc.merge!(d => 'v', pt => '.')
+    has_changes = true
+    nc[d] = 'v'
+    nc.delete(pt)
   end
 
-  nc
+  return nc, has_changes
 end
 
 def part1
@@ -50,14 +59,13 @@ def part1
 
   max_x = cukes.each_key.map(&:x).max
   max_y = cukes.each_key.map(&:y).max
+  cukes.delete_if { |_, v| v == '.' }
 
   iters = 0
   loop do
-    # puts iters
-    # print_grid(cukes, max_x, max_y)
-    nc = move(cukes, max_x, max_y)
+    nc, has_changes = move(cukes, max_x, max_y)
     iters += 1
-    break if nc == cukes
+    break unless has_changes
 
     cukes = nc
   end
