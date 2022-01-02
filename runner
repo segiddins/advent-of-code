@@ -57,7 +57,7 @@ def run(year, day, realtime = true)
       end
     end.split("\n")
 
-  first = out.slice!(0, 1).first
+  first = out.slice!(0, 1).first if out.size > 1
   time = out.slice!(-1, 1).last
   second = out.join("\n")
 
@@ -70,4 +70,4 @@ def run(year, day, realtime = true)
   end
 end
 
-23.upto(23) { |d| run(2021, d, true) }
+24.upto(25) { |d| run(2021, d, true) }
