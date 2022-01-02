@@ -70,4 +70,4 @@ def run(year, day, realtime = true)
   end
 end
 
-24.upto(25) { |d| run(2021, d, true) }
+23.upto(25) { |d| benchmark(2021, d) }
