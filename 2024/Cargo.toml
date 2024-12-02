@@ -1,0 +1,9 @@
+[package]
+name = "aoc_2024"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = "^4"
+clap_derive = "^4"
+itertools = "0.13.0"
