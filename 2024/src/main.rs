@@ -5,6 +5,8 @@ use clap_derive::{Parser, ValueEnum};
 
 mod day_1;
 mod day_2;
+mod day_3;
+mod day_4;
 
 #[derive(Debug, Clone, ValueEnum)]
 enum Input {
@@ -51,6 +53,8 @@ impl Args {
             let solution: Box<dyn Solution> = match day {
                 1 => Box::new(day_1::Day1::new(input)?),
                 2 => Box::new(day_2::Solution::new(input)?),
+                3 => Box::new(day_3::Solution::new(input)?),
+                4 => Box::new(day_4::Solution::new(input)?),
                 _ => return Err(format!("Day {} not implemented", day).into()),
             };
             {
