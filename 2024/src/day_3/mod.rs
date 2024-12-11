@@ -14,16 +14,16 @@ impl Solution {
 }
 
 impl crate::Solution for Solution {
-    fn part_1(&self) -> Result<i32, Box<dyn Error>> {
+    fn part_1(&self) -> Result<i64, Box<dyn Error>> {
         let pattern = Regex::new(r"mul\((\d+),(\d+)\)")?;
         let sum = pattern
             .captures_iter(&self.input)
-            .map(|m| m[1].parse::<i32>().unwrap() * m[2].parse::<i32>().unwrap())
+            .map(|m| m[1].parse::<i64>().unwrap() * m[2].parse::<i64>().unwrap())
             .sum();
         Ok(sum)
     }
 
-    fn part_2(&self) -> Result<i32, Box<dyn Error>> {
+    fn part_2(&self) -> Result<i64, Box<dyn Error>> {
         let pattern = Regex::new(r"mul\((\d+),(\d+)\)|(do\(\))|(don't\(\))")?;
         let sum = pattern
             .captures_iter(&self.input)
@@ -35,7 +35,7 @@ impl crate::Solution for Solution {
                 } else if acc.0 {
                     (
                         true,
-                        acc.1 + (m[1].parse::<i32>().unwrap() * m[2].parse::<i32>().unwrap()),
+                        acc.1 + (m[1].parse::<i64>().unwrap() * m[2].parse::<i64>().unwrap()),
                     )
                 } else {
                     acc

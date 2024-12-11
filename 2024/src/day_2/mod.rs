@@ -4,16 +4,16 @@ use itertools::Itertools;
 
 #[derive(Debug)]
 pub struct Solution {
-    reports: Vec<Vec<i32>>,
+    reports: Vec<Vec<i64>>,
 }
 
 impl Solution {
     pub fn new(input: String) -> Result<Self, Box<dyn Error>> {
-        let reports: Vec<Vec<i32>> = input
+        let reports: Vec<Vec<i64>> = input
             .split("\n")
             .map(|line| {
                 line.split_whitespace()
-                    .map(|s| s.parse::<i32>().unwrap())
+                    .map(|s| s.parse::<i64>().unwrap())
                     .collect_vec()
             })
             .collect();
@@ -23,8 +23,8 @@ impl Solution {
 }
 
 impl crate::Solution for Solution {
-    fn part_1(&self) -> Result<i32, Box<dyn Error>> {
-        fn valid(report: &Vec<i32>) -> bool {
+    fn part_1(&self) -> Result<i64, Box<dyn Error>> {
+        fn valid(report: &Vec<i64>) -> bool {
             report
                 .iter()
                 .tuple_windows()
@@ -34,13 +34,13 @@ impl crate::Solution for Solution {
                     .tuple_windows()
                     .all(|(a, b)| a > b && (a - b) <= 3)
         }
-        let result = self.reports.iter().filter(|report| valid(report)).count() as i32;
+        let result = self.reports.iter().filter(|report| valid(report)).count() as i64;
 
         Ok(result)
     }
 
-    fn part_2(&self) -> Result<i32, Box<dyn Error>> {
-        fn valid(report: &Vec<i32>) -> bool {
+    fn part_2(&self) -> Result<i64, Box<dyn Error>> {
+        fn valid(report: &Vec<i64>) -> bool {
             report
                 .iter()
                 .tuple_windows()
@@ -50,7 +50,7 @@ impl crate::Solution for Solution {
                     .tuple_windows()
                     .all(|(a, b)| a > b && (a - b) <= 3)
         }
-        fn perms<'a>(report: &'a Vec<i32>) -> impl Iterator<Item = Vec<i32>> + 'a {
+        fn perms<'a>(report: &'a Vec<i64>) -> impl Iterator<Item = Vec<i64>> + 'a {
             report
                 .iter()
                 .combinations(report.len() - 1)
@@ -60,7 +60,7 @@ impl crate::Solution for Solution {
             .reports
             .iter()
             .filter(|report| perms(report).any(|perm| valid(&perm)))
-            .count() as i32;
+            .count() as i64;
 
         Ok(result)
     }

@@ -1,8 +1,5 @@
 use std::error::Error;
 
-use itertools::Itertools;
-use regex::Regex;
-
 #[derive(Debug)]
 pub struct Solution {
     grid: Vec<Vec<char>>,
@@ -16,8 +13,8 @@ impl Solution {
 }
 
 impl crate::Solution for Solution {
-    fn part_1(&self) -> Result<i32, Box<dyn Error>> {
-        fn count_xmas(grid: Vec<Vec<char>>, include_cardinal: bool) -> i32 {
+    fn part_1(&self) -> Result<i64, Box<dyn Error>> {
+        fn count_xmas(grid: Vec<Vec<char>>, include_cardinal: bool) -> i64 {
             let mut count = 0;
             for i in 0..grid.len() {
                 for j in 0..grid[i].len() {
@@ -77,8 +74,8 @@ impl crate::Solution for Solution {
         Ok(count)
     }
 
-    fn part_2(&self) -> Result<i32, Box<dyn Error>> {
-        fn count_xmas(grid: Vec<Vec<char>>) -> i32 {
+    fn part_2(&self) -> Result<i64, Box<dyn Error>> {
+        fn count_xmas(grid: Vec<Vec<char>>) -> i64 {
             let mut count = 0;
             for i in 1..grid.len() - 1 {
                 for j in 1..grid[i].len() - 1 {
