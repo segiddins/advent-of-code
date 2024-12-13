@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::{error::Error, fmt::Debug, fs, path::Path, time::Instant};
 
 use clap::Parser;
@@ -10,7 +12,8 @@ mod day_4;
 mod day_5;
 mod day_6;
 mod day_7;
-
+mod day_8;
+mod day_9;
 #[derive(Debug, Clone, ValueEnum)]
 enum Input {
     Example,
@@ -53,6 +56,8 @@ impl Args {
             5 => Ok(Box::new(day_5::Solution::new(input)?)),
             6 => Ok(Box::new(day_6::Solution::new(input)?)),
             7 => Ok(Box::new(day_7::Solution::new(input)?)),
+            8 => Ok(Box::new(day_8::Solution::new(input)?)),
+            9 => Ok(Box::new(day_9::Solution::new(input)?)),
             _ => return Err(format!("Day {} not implemented", day).into()),
         }
     }
