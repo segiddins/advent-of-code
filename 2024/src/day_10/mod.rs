@@ -3,7 +3,7 @@ use std::fmt::{Debug, Display};
 use std::{collections::HashMap, error::Error};
 
 use itertools::Itertools;
-use rayon::iter::repeat;
+use rayon::iter::{repeat, IntoParallelRefIterator, ParallelIterator};
 
 use crate::grid::{Grid, Position};
 
@@ -89,7 +89,7 @@ impl crate::Solution for Solution {
             .collect_vec();
 
         let count = zeros
-            .iter()
+            .par_iter()
             .map(|zero| {
                 nines
                     .iter()
@@ -115,7 +115,7 @@ impl crate::Solution for Solution {
             .collect_vec();
 
         let count = zeros
-            .iter()
+            .par_iter()
             .map(|zero| {
                 nines
                     .iter()
