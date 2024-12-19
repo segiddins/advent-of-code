@@ -7,6 +7,7 @@ use clap_derive::{Parser, ValueEnum};
 
 mod day_1;
 mod day_10;
+mod day_11;
 mod day_2;
 mod day_3;
 mod day_4;
@@ -63,6 +64,7 @@ impl Args {
             8 => Ok(Box::new(day_8::Solution::new(input)?)),
             9 => Ok(Box::new(day_9::Solution::new(input)?)),
             10 => Ok(Box::new(day_10::Solution::new(input)?)),
+            11 => Ok(Box::new(day_11::Solution::new(input)?)),
             _ => return Err(format!("Day {} not implemented", day).into()),
         }
     }
