@@ -1,15 +1,22 @@
-use std::fmt::{Debug, Display};
+use std::{
+    fmt::{Debug, Display},
+    isize,
+};
+
+use itertools::Itertools;
 
 pub struct Grid<T> {
     size: (usize, usize),
     grid: Vec<Vec<T>>,
 }
 
-#[derive(Clone, Copy, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Position {
     x: usize,
     y: usize,
 }
+
+pub const CARGINAL_OFFSETS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, 1), (0, -1)];
 
 impl Debug for Position {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -71,6 +78,22 @@ impl<T> Grid<T> {
         Self { size, grid }
     }
 
+    pub fn neighbors(&self, pos: Position) -> Vec<(Position, &T)> {
+        let mut neighbors = Vec::with_capacity(4);
+        for (dx, dy) in [(-1, 0), (1, 0), (0, -1), (0, 1)] {
+            let x = pos.x as isize + dx;
+            let y = pos.y as isize + dy;
+            let neighbor = Position {
+                x: x as usize,
+                y: y as usize,
+            };
+            if let Some(value) = self.get(neighbor) {
+                neighbors.push((neighbor, value));
+            }
+        }
+        neighbors
+    }
+
     pub fn get(&self, pos: Position) -> Option<&T> {
         if self.out_of_bounds(pos) {
             return None;
@@ -109,6 +132,16 @@ impl<T: Clone> Clone for Grid<T> {
             size: self.size,
             grid: self.grid.clone(),
         }
+    }
+}
+
+impl<T: From<char>> Grid<T> {
+    pub fn from_str(s: &str) -> Self {
+        Self::new(
+            s.lines()
+                .map(|l| l.chars().map_into().collect_vec())
+                .collect_vec(),
+        )
     }
 }
 

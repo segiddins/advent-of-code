@@ -8,6 +8,7 @@ use clap_derive::{Parser, ValueEnum};
 mod day_1;
 mod day_10;
 mod day_11;
+mod day_12;
 mod day_2;
 mod day_3;
 mod day_4;
@@ -65,6 +66,7 @@ impl Args {
             9 => Ok(Box::new(day_9::Solution::new(input)?)),
             10 => Ok(Box::new(day_10::Solution::new(input)?)),
             11 => Ok(Box::new(day_11::Solution::new(input)?)),
+            12 => Ok(Box::new(day_12::Solution::new(input)?)),
             _ => return Err(format!("Day {} not implemented", day).into()),
         }
     }
@@ -81,7 +83,14 @@ impl Args {
         for file_name in file_names {
             let input = fs::read_to_string(dir.join(file_name))?;
 
-            let solution = self.solution_for_day(day, input)?;
+            let solution = {
+                let start = Instant::now();
+                let solution = self.solution_for_day(day, input);
+                let elapsed = start.elapsed();
+                let name = format!("day_{}/{}", day, file_name);
+                println!("Solution for {:?} in {:?}", name, elapsed);
+                solution
+            }?;
             {
                 let start = Instant::now();
                 let result = solution.part_1()?;
