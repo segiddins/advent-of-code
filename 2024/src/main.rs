@@ -30,6 +30,7 @@ mod day_1;
 mod day_10;
 mod day_11;
 mod day_12;
+mod day_13;
 mod day_2;
 mod day_3;
 mod day_4;
@@ -117,6 +118,7 @@ impl Args {
             10 => Ok(Box::new(day_10::Solution::new(input)?)),
             11 => Ok(Box::new(day_11::Solution::new(input)?)),
             12 => Ok(Box::new(day_12::Solution::new(input)?)),
+            13 => Ok(Box::new(day_13::Solution::new(input)?)),
             _ => return Err(format!("Day {} not implemented", day).into()),
         }
     }

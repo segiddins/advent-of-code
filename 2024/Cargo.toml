@@ -6,8 +6,9 @@ edition = "2021"
 [dependencies]
 clap = "^4"
 clap_derive = "^4"
-indicatif = "0.17.9"
+indicatif = { version = "0.17.9", features = ["rayon"] }
 itertools = "0.13.0"
+num = "0.4.3"
 rayon = "1.10.0"
 regex = "1.11.1"
 scopeguard = "1.2.0"
