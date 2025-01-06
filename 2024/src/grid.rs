@@ -1,7 +1,4 @@
-use std::{
-    fmt::{Debug, Display},
-    isize,
-};
+use std::fmt::{Debug, Display};
 
 use itertools::Itertools;
 

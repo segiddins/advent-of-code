@@ -34,14 +34,18 @@ fn split_even(n: i64) -> Option<(i64, i64)> {
         return None;
     }
     digits.reverse();
-    let mut left = 0;
-    for i in 0..digits.len() / 2 {
-        left = left * 10 + digits[i];
-    }
-    let mut right = 0;
-    for i in digits.len() / 2..digits.len() {
-        right = right * 10 + digits[i];
-    }
+    let left = digits
+        .iter()
+        .take(digits.len() / 2)
+        .copied()
+        .reduce(|a, b| a * 10 + b)
+        .unwrap();
+    let right = digits
+        .iter()
+        .skip(digits.len() / 2)
+        .copied()
+        .reduce(|a, b| a * 10 + b)
+        .unwrap();
     Some((left, right))
 }
 

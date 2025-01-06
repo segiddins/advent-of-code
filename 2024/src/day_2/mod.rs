@@ -24,7 +24,7 @@ impl Solution {
 
 impl crate::Solution for Solution {
     fn part_1(&self) -> Result<i64, Box<dyn Error>> {
-        fn valid(report: &Vec<i64>) -> bool {
+        fn valid(report: &[i64]) -> bool {
             report
                 .iter()
                 .tuple_windows()
@@ -40,7 +40,7 @@ impl crate::Solution for Solution {
     }
 
     fn part_2(&self) -> Result<i64, Box<dyn Error>> {
-        fn valid(report: &Vec<i64>) -> bool {
+        fn valid(report: &[i64]) -> bool {
             report
                 .iter()
                 .tuple_windows()
@@ -50,7 +50,7 @@ impl crate::Solution for Solution {
                     .tuple_windows()
                     .all(|(a, b)| a > b && (a - b) <= 3)
         }
-        fn perms(report: &Vec<i64>) -> impl Iterator<Item = Vec<i64>> + '_ {
+        fn perms(report: &[i64]) -> impl Iterator<Item = Vec<i64>> + '_ {
             report
                 .iter()
                 .combinations(report.len() - 1)

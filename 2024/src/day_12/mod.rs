@@ -96,7 +96,7 @@ impl Solution {
 
         let groups = groups
             .into_values()
-            .unique_by(|g| Rc::<HashSet<_>>::as_ptr(g))
+            .unique_by(Rc::<HashSet<_>>::as_ptr)
             .map(Rc::unwrap_or_clone)
             .collect_vec();
 
