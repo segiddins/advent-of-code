@@ -63,7 +63,7 @@ impl crate::Solution for Solution {
             self.rules
                 .iter()
                 .filter(|(a, b)| update.contains(a) && update.contains(b))
-                .for_each(|(a, b)| topo.add_dependency(a.clone(), b.clone()));
+                .for_each(|(a, b)| topo.add_dependency(*a, *b));
             topo.collect_vec()
         };
 

@@ -96,8 +96,8 @@ impl Solution {
 
         let groups = groups
             .into_values()
-            .unique_by(|g| Rc::<HashSet<_>>::as_ptr(&g))
-            .map(|g| Rc::unwrap_or_clone(g))
+            .unique_by(|g| Rc::<HashSet<_>>::as_ptr(g))
+            .map(Rc::unwrap_or_clone)
             .collect_vec();
 
         Ok(Self { grid, groups })
@@ -173,10 +173,10 @@ impl crate::Solution for Solution {
         // 1467622 too low
         // 1473018 too low
         // 1494342
-        Ok(self.groups.iter().map(|g| cost(&self.grid, &g)).sum())
+        Ok(self.groups.iter().map(|g| cost(&self.grid, g)).sum())
     }
 
     fn part_2(&self) -> Result<i64, Box<dyn Error>> {
-        Ok(self.groups.iter().map(|g| cost2(&self.grid, &g)).sum())
+        Ok(self.groups.iter().map(|g| cost2(&self.grid, g)).sum())
     }
 }

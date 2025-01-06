@@ -66,8 +66,8 @@ impl crate::Solution for Solution {
                 }
             }
         }
-        if disk.len() > 0 {
-            let mut i = 0 as usize;
+        if !disk.is_empty() {
+            let mut i = 0_usize;
             let mut j = disk.len() - 1;
             while i < j {
                 if disk[j] == Block::FreeSpace {
@@ -111,7 +111,7 @@ impl crate::Solution for Solution {
                 }
             }
         }
-        if disk.len() > 0 {
+        if !disk.is_empty() {
             let mut i: usize = 0;
             let mut j = disk.len() - 1;
             while j > 0 {

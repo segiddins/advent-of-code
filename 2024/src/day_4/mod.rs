@@ -59,8 +59,7 @@ impl crate::Solution for Solution {
             + count_xmas(
                 self.grid
                     .iter()
-                    .rev()
-                    .map(|row| row.clone())
+                    .rev().cloned()
                     .collect::<Vec<_>>(),
                 false,
             )

@@ -39,13 +39,11 @@ impl crate::Solution for Solution {
             .par_iter()
             .filter(|(lhs, rhs)| {
                 repeat_n(vec![i64::checked_add, i64::checked_mul], rhs.len() - 1)
-                    .into_iter()
                     .multi_cartesian_product()
                     .par_bridge()
                     .any(|mut ops| {
                         let res = rhs
-                            .iter()
-                            .map(|v| *v)
+                            .iter().copied()
                             .reduce(|a, b| {
                                 let f = ops.pop().unwrap();
                                 f(a, b).unwrap()
@@ -83,8 +81,7 @@ impl crate::Solution for Solution {
             .filter(|(lhs, rhs)| {
                 counts.get(&rhs.len()).unwrap().iter().any(|ops| {
                     let res = rhs
-                        .iter()
-                        .map(|v| *v)
+                        .iter().copied()
                         .enumerate()
                         .reduce(|(i, a), (j, b)| {
                             let f = ops[i];

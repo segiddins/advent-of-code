@@ -50,7 +50,7 @@ impl crate::Solution for Solution {
                     .tuple_windows()
                     .all(|(a, b)| a > b && (a - b) <= 3)
         }
-        fn perms<'a>(report: &'a Vec<i64>) -> impl Iterator<Item = Vec<i64>> + 'a {
+        fn perms(report: &Vec<i64>) -> impl Iterator<Item = Vec<i64>> + '_ {
             report
                 .iter()
                 .combinations(report.len() - 1)

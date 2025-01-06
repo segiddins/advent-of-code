@@ -119,7 +119,7 @@ impl Args {
             11 => Ok(Box::new(day_11::Solution::new(input)?)),
             12 => Ok(Box::new(day_12::Solution::new(input)?)),
             13 => Ok(Box::new(day_13::Solution::new(input)?)),
-            _ => return Err(format!("Day {} not implemented", day).into()),
+            _ => Err(format!("Day {} not implemented", day).into()),
         }
     }
 

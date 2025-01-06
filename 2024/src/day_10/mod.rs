@@ -32,7 +32,7 @@ impl Solution {
 fn reachable(grid: &Grid<isize>, a: &Position, b: &Position) -> bool {
     let mut visited = HashSet::new();
     let mut queue = VecDeque::new();
-    queue.push_back(a.clone());
+    queue.push_back(*a);
     while let Some(pos) = queue.pop_front() {
         if pos == *b {
             return true;
@@ -55,13 +55,13 @@ fn reachable(grid: &Grid<isize>, a: &Position, b: &Position) -> bool {
 fn all_paths(grid: &Grid<isize>, a: &Position, b: &Position) -> Vec<Vec<Position>> {
     let mut paths = Vec::new();
     let mut queue = VecDeque::new();
-    queue.push_back(vec![a.clone()]);
+    queue.push_back(vec![*a]);
     while let Some(path) = queue.pop_front() {
         if path.last().is_some_and(|pos| pos == b) {
             paths.push(path.clone());
         }
         for offset in [(0, 1), (1, 0), (0, -1), (-1, 0)] {
-            if let Some(new_pos) = grid.valid_offset(&path.last().unwrap(), offset) {
+            if let Some(new_pos) = grid.valid_offset(path.last().unwrap(), offset) {
                 if *grid.get(new_pos).unwrap() != grid.get(*path.last().unwrap()).unwrap() + 1 {
                     continue;
                 }

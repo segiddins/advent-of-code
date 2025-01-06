@@ -121,7 +121,7 @@ impl crate::Solution for Solution {
             let next_pos = (pos.0 + direction.0, pos.1 + direction.1);
             match grid.get(next_pos) {
                 Some('.') => {
-                    let guard = grid.get(pos).unwrap().clone();
+                    let guard = *grid.get(pos).unwrap();
                     grid.set(pos, '.');
                     pos = next_pos;
                     grid.set(next_pos, guard);
@@ -168,7 +168,7 @@ impl crate::Solution for Solution {
             let next_pos = (pos.0 + direction.0, pos.1 + direction.1);
             match grid.get(next_pos) {
                 Some('.') => {
-                    let guard = grid.get(pos).unwrap().clone();
+                    let guard = *grid.get(pos).unwrap();
                     grid.set(pos, '.');
                     pos = next_pos;
                     grid.set(next_pos, guard);
@@ -195,7 +195,7 @@ impl crate::Solution for Solution {
             .filter(|blocker: &(i32, i32)| {
                 let mut pos = initial_pos;
                 let mut grid = self.grid.clone();
-                grid.set(blocker.clone(), '#');
+                grid.set(*blocker, '#');
                 let mut visited = HashSet::new();
                 loop {
                     let direction = match grid.get(pos) {
@@ -212,7 +212,7 @@ impl crate::Solution for Solution {
                     let next_pos = (pos.0 + direction.0, pos.1 + direction.1);
                     match grid.get(next_pos) {
                         Some('.') => {
-                            let guard = grid.get(pos).unwrap().clone();
+                            let guard = *grid.get(pos).unwrap();
                             grid.set(pos, '.');
                             pos = next_pos;
                             grid.set(next_pos, guard);

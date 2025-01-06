@@ -47,9 +47,7 @@ impl Solution {
         let machines = input
             .split("\n\n")
             .map(|m| {
-                let captures = pattern.captures(m).expect(
-                    format!("Failed to capture: {:?} with pattern: {:?}", m, pattern).as_str(),
-                );
+                let captures = pattern.captures(m).unwrap_or_else(|| panic!("Failed to capture: {:?} with pattern: {:?}", m, pattern));
                 Machine {
                     a: Pos {
                         x: captures[1].parse().unwrap(),
